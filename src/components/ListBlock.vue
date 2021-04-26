@@ -1,64 +1,59 @@
 <template>
-  <div class="list">
-    <div class="list__filter">
-      <select>
-        <option value="all">all</option>
-        <option value="done">done</option>
-        <option value="works">works</option>
-      </select>
+  <div class="lists">
+    <div class="lists__filter">
+      <FilterList @get-value="getValue" />
     </div>
-    <div class="list__items" :key="list.id" v-for="list in lists">
-      <div>{{ list.text }}</div>
+    <div class="lists__items">
+      <div
+        :class="['lists__item', filter]"
+        :key="list.id"
+        v-for="list in filterList"
+        @dblclick="getList(list.id)"
+      >
+        <List @delete-list="$emit('delete-list', list.id)" :list="list" />
+      </div>
     </div>
-    <div class="list__add">
-      <input type="text" />
-      <Button @click="cns()" text="Добавить список" />
-    </div>
+
+    <AddList @add-list="addList" />
   </div>
 </template>
 
 <script>
-import Button from "./Button";
+import FilterList from "./FilterList";
+import List from "./List";
+import AddList from "./AddList";
 export default {
   name: "ListBlock",
-  components: {
-    Button,
+  props: {
+    lists: Object,
+    filterList: Object,
   },
-  methods: {
-    cns() {
-      console.log(this.task);
-    },
+  components: {
+    FilterList,
+    List,
+    AddList,
   },
   data() {
     return {
-      lists: [],
-      task: [],
+      filter: "",
     };
   },
-  created() {
-    this.lists = [
-      {
-        id: 1,
-        text: "List 1",
-        task: [
-          { id: 1, text: "Doctor", day: "1 march", reminder: true },
-          { id: 2, text: "Teacher", day: "2 march", reminder: true },
-          { id: 3, text: "Shopping", day: "3 march", reminder: true },
-        ],
-      },
-      {
-        id: 2,
-        text: "List 2",
-      },
-      {
-        id: 3,
-        text: "List 3",
-      },
-      {
-        id: 4,
-        text: "List 4",
-      },
-    ];
+  methods: {
+    addList(newList) {
+      this.$emit("add-list", newList);
+    },
+    getValue(selectedOption) {
+      this.$emit("get-value", selectedOption);
+    },
+    getList(id) {
+      for (let list in this.filterList) {
+        if (this.filterList[list].id == id) {
+          this.list = this.filterList[list];
+          this.$emit("get-list", this.list);
+        }
+      }
+    },
   },
+  emits: ["delete-list", "add-list", "get-list", "get-value"],
 };
 </script>
