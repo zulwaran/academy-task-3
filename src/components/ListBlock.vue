@@ -1,20 +1,20 @@
 <template>
   <div class="lists">
     <div class="lists__filter">
-      <FilterList @get-value="getValue" />
+      <FilterList />
     </div>
     <div class="lists__items">
       <div
-        :class="['lists__item', filter]"
+        :class="['lists__item', list.color]"
         :key="list.id"
-        v-for="list in filterList"
-        @dblclick="getList(list.id)"
+        v-for="list in visibleList"
+        @dblclick="getList(list)"
       >
-        <List @delete-list="$emit('delete-list', list.id)" :list="list" />
+        <List :list="list" />
       </div>
     </div>
 
-    <AddList @add-list="addList" />
+    <AddList />
   </div>
 </template>
 
@@ -25,7 +25,7 @@ import AddList from "./AddList";
 export default {
   name: "ListBlock",
   props: {
-    lists: Object,
+    visibleList: Object,
     filterList: Object,
   },
   components: {
@@ -39,21 +39,9 @@ export default {
     };
   },
   methods: {
-    addList(newList) {
-      this.$emit("add-list", newList);
-    },
-    getValue(selectedOption) {
-      this.$emit("get-value", selectedOption);
-    },
-    getList(id) {
-      for (let list in this.filterList) {
-        if (this.filterList[list].id == id) {
-          this.list = this.filterList[list];
-          this.$emit("get-list", this.list);
-        }
-      }
+    getList(list) {
+      this.$store.commit("GET_CURRENT_LIST", list);
     },
   },
-  emits: ["delete-list", "add-list", "get-list", "get-value"],
 };
 </script>

@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     onDelete(id) {
-      this.$emit("delete-task", id);
+      this.$store.commit("DELETE_TASK", id)
     },
   },
 };

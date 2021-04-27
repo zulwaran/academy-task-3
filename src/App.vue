@@ -1,18 +1,10 @@
 <template>
   <section class="container">
     <div class="todolist">
-      <ListBlock
-        @get-list="getList"
-        @add-list="addList"
-        @delete-list="deleteList"
-        @get-value="getValue"
-        :filterList="filterList"
-      />
+      <ListBlock :visibleList="$store.state.visibleList" />
       <TaskBlock
-        :listTasks="listTasks"
-        :list="list"
-        @delete-task="deleteTask"
-        @add-task="addTask"
+        :currentTasks="$store.state.currentTasks"
+        :currentList="$store.state.currentList"
       />
     </div>
     <button @click="aaa">SELECT</button>
@@ -30,247 +22,19 @@ export default {
   },
   props: {},
   methods: {
-    addList(newList) {
-      this.lists = [...this.lists, newList];
-      alert("Список дел " + newList.text + " добавлен");
-    },
-    addTask(newTask) {
-      this.listTasks = [...this.listTasks, newTask];
-      alert(newTask.title + " добавлено в " + this.list.text);
-    },
-    deleteList(id) {
-      if (confirm("Вы действительно хотите удалить список?")) {
-        this.lists = this.lists.filter((list) => list.id !== id);
-      }
-    },
-    deleteTask(id) {
-      if (confirm("Вы действительно хотите удалить задачу?")) {
-        this.listTasks = this.listTasks.filter((task) => task.id !== id);
-      }
-    },
-    getList(list) {
-      this.list = list;
-      this.listTasks = this.tasks.filter(function (task) {
-        return task.listId === list.id;
-      });
-    },
-    getValue(selectedOption) {
-      let t = this.tasks;
-      switch (selectedOption) {
-        case "all":
-          this.filterList = this.lists;
-          console.log(this.filterList);
-          break;
-        case "done":
-          this.filterList = this.lists.filter(function (list) {
-            var count = 0;
-            for (let task in t) {
-              if (t[task].listId === list.id && t[task].completed === false) {
-                count += 1;
-              }
-            }
-            if (count === 0) {
-              return true;
-            } else {
-              return false;
-            }
-          });
-          console.log(this.filterList);
-          break;
-        case "works":
-          this.filterList = this.lists.filter(function (list) {
-            var count = 0;
-            for (let task in t) {
-              if (t[task].listId === list.id && t[task].completed === false) {
-                count += 1;
-              }
-            }
-            if (count > 0) {
-              return true;
-            } else {
-              return false;
-            }
-          });
-          console.log(this.filterList);
-          break;
-      }
-    },
     aaa() {
-      console.log(this.listTasks);
+      this.$store.commit("COLOR_LIST");
     },
+  },
+  beforeMount() {
+    this.$store.commit("COLOR_LIST");
   },
   data() {
     return {
-      lists: [],
-      tasks: [],
       filterList: [],
       list: [],
       listTasks: [],
     };
-  },
-  created() {
-    this.lists = [
-      {
-        id: 1,
-        text: "Список 1",
-      },
-      {
-        id: 2,
-        text: "Список 2",
-      },
-      {
-        id: 3,
-        text: "Список 3",
-      },
-      {
-        id: 4,
-        text: "Список 4",
-      },
-      {
-        id: 5,
-        text: "Список 5",
-      },
-    ];
-
-    this.tasks = [
-      {
-        listId: 1,
-        id: 1,
-        title: "delectus aut autem",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 1,
-        id: 2,
-        title: "quis ut nam facilis et officia qui",
-        day: "14.08.21 14:37",
-        urgently: false,
-        completed: false,
-      },
-      {
-        listId: 1,
-        id: 3,
-        title: "fugiat veniam minus",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 1,
-        id: 4,
-        title: "et porro tempora",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 2,
-        id: 5,
-        title:
-          "laboriosam mollitia et enim quasi adipisci quia provident illum",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 2,
-        id: 6,
-        title: "qui ullam ratione quibusdam voluptatem quia omnis",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 2,
-        id: 7,
-        title: "illo expedita consequatur quia in",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 2,
-        id: 8,
-        title: "quo adipisci enim quam ut ab",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 3,
-        id: 9,
-        title: "molestiae perspiciatis ipsa",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: false,
-      },
-      {
-        listId: 3,
-        id: 10,
-        title: "illo est ratione doloremque quia maiores aut",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 3,
-        id: 11,
-        title: "vero rerum temporibus dolor",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 3,
-        id: 12,
-        title: "ipsa repellendus fugit nisi",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 4,
-        id: 13,
-        title: "et doloremque nulla",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 4,
-        id: 14,
-        title: "repellendus sunt dolores architecto voluptatum",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 4,
-        id: 15,
-        title: "ab voluptatum amet voluptas",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 4,
-        id: 16,
-        title: "accusamus eos facilis sint et aut voluptatem",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-      {
-        listId: 4,
-        id: 17,
-        title: "quo laboriosam deleniti aut qui",
-        day: "14.08.21 14:37",
-        urgently: true,
-        completed: true,
-      },
-    ];
   },
 };
 </script>
@@ -298,6 +62,9 @@ body {
 }
 .gray {
   background: grey;
+}
+.white {
+  background: inherit;
 }
 .todolist {
   display: flex;

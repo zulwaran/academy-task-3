@@ -16,17 +16,8 @@ export default {
   },
   methods: {
     addList() {
-      if (!this.text) {
-        alert("Введите название списка");
-        return;
-      }
-
-      const newList = {
-        id: Math.floor(Math.random() * 100000),
-        text: this.text,
-      };
-
-      (this.text = ""), this.$emit("add-list", newList);
+      this.$store.commit('ADD_LIST', this.text)
+      this.text = "";
     },
   },
 };

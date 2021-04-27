@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     onDelete(id) {
-      this.$emit("delete-list", id);
+      this.$store.commit("DELETE_LIST", id)
     },
   },
 };

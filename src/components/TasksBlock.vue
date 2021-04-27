@@ -1,11 +1,10 @@
 <template>
   <div class="tasks">
-    <div class="tasks__title">{{ list.text }}</div>
-    <div class="tasks__items" :key="task.id" v-for="task in listTasks">
-      <Task :task="task" @delete-task="$emit('delete-task', task.id)" />
+    <div class="tasks__title">{{currentList.text}}</div>
+    <div class="tasks__items" :key="task.id" v-for="task in currentTasks">
+      <Task :task="task" />
     </div>
-
-    <AddTask @add-task="addTask" :list="list" />
+    <AddTask />
   </div>
 </template>
 
@@ -15,21 +14,14 @@ import AddTask from "./AddTask";
 export default {
   name: "TasksBlock",
   props: {
-    listTasks: Object,
-    list: Object,
+    tasks: Object,
+    currentList: Object,
+    currentTasks: Object,
   },
   components: {
     Task,
     AddTask,
   },
-  methods: {
-    addTask(newTask) {
-      this.$emit("add-task", newTask);
-    },
-  },
-  emits: ["delete-task", "add-task"],
-  data() {
-    return {};
-  },
+  methods: {},
 };
 </script>
