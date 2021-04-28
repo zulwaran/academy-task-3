@@ -14,6 +14,7 @@
 <script>
 import ListBlock from "./components/ListBlock";
 import TaskBlock from "./components/TasksBlock";
+import { mapActions } from "vuex";
 export default {
   name: "App",
   components: {
@@ -21,20 +22,22 @@ export default {
     TaskBlock,
   },
   props: {},
+  computed: {},
   methods: {
-    aaa() {
-      this.$store.commit("COLOR_LIST");
-    },
+    ...mapActions(["GET_LISTS_FROM_API", "GET_TASKS_FROM_API"]),
+    aaa() {},
   },
   beforeMount() {
     this.$store.commit("COLOR_LIST");
+    this.GET_LISTS_FROM_API();
+  },
+  mounted() {
+    /* this.GET_LISTS_FROM_API(); */
+    this.GET_TASKS_FROM_API();
+    this.$store.commit("LIST_FILTER", "done");
   },
   data() {
-    return {
-      filterList: [],
-      list: [],
-      listTasks: [],
-    };
+    return {};
   },
 };
 </script>

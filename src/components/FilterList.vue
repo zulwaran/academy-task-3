@@ -15,9 +15,9 @@ export default {
       selectedOption: "done",
     };
   },
-  beforeMount() {
+/*   beforeMount() {
     this.$store.commit("LIST_FILTER", this.selectedOption);
-  },
+  }, */
   methods: {
     filterLists() {
       this.$store.commit("LIST_FILTER", this.selectedOption);
