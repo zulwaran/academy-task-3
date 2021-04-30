@@ -1,44 +1,10 @@
 <template>
-  <section class="container">
-    <div class="todolist">
-      <ListBlock :visibleList="$store.state.visibleList" />
-      <TaskBlock
-        :currentTasks="$store.state.currentTasks"
-        :currentList="$store.state.currentList"
-      />
-    </div>
-    <button @click="aaa">SELECT</button>
-  </section>
+  <router-view></router-view>
 </template>
 
 <script>
-import ListBlock from "./components/ListBlock";
-import TaskBlock from "./components/TasksBlock";
-import { mapActions } from "vuex";
 export default {
   name: "App",
-  components: {
-    ListBlock,
-    TaskBlock,
-  },
-  props: {},
-  computed: {},
-  methods: {
-    ...mapActions(["GET_LISTS_FROM_API", "GET_TASKS_FROM_API"]),
-    aaa() {},
-  },
-  beforeMount() {
-    this.$store.commit("COLOR_LIST");
-    this.GET_LISTS_FROM_API();
-  },
-  mounted() {
-    /* this.GET_LISTS_FROM_API(); */
-    this.GET_TASKS_FROM_API();
-    this.$store.commit("LIST_FILTER", "done");
-  },
-  data() {
-    return {};
-  },
 };
 </script>
 
@@ -59,15 +25,6 @@ body {
   display: flex;
   position: relative;
   padding: 10px;
-}
-.green {
-  background: green;
-}
-.gray {
-  background: grey;
-}
-.white {
-  background: inherit;
 }
 .todolist {
   display: flex;
@@ -93,8 +50,27 @@ body {
   text-align: center;
   border-top: none;
   margin: 0 auto;
-  padding: 20px 0 0;
-  width: 94%;
+  padding: 20px 10px;
+}
+.lists__item {
+  padding: 10px;
+  border: 1px solid black;
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.lists__item .text {
+  overflow-wrap: anywhere;
+  max-width: 180px;
+  margin-right: 15px;
+}
+
+.lists__item i {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
 }
 .lists__add {
   display: flex;
@@ -111,20 +87,20 @@ body {
   padding: 5px;
   cursor: pointer;
 }
-.lists__item {
-  padding: 10px;
-  border: 1px solid black;
-  margin-bottom: 20px;
-  position: relative;
+
+.green {
+  background: green;
 }
-.lists__item i {
-  position: absolute;
-  right: 10px;
-  cursor: pointer;
+.gray {
+  background: grey;
+}
+.white {
+  background: inherit;
 }
 
 .tasks {
   padding: 10px;
+  min-width: 530px;
   margin-left: 10px;
   border-left: 1px solid #000;
   border-right: 1px solid #000;
@@ -135,7 +111,7 @@ body {
   margin-bottom: 20px;
 }
 .tasks__items {
-  margin-bottom: 10px;
+  min-height: 158px;
 }
 .tasks__item {
   display: flex;
@@ -146,13 +122,22 @@ body {
   border: 1px solid black;
   padding: 10px;
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-end;
+  align-items: center;
+}
+.task .text {
+  width: 300px;
+  overflow-wrap: anywhere;
+}
+.task .data {
+  margin-left: 10px;
 }
 .fa-circle:before {
   content: "\f111";
-  position: absolute;
+  margin-right: 15px;
 }
 .fa-times:before {
+  margin-left: 10px;
   content: "\f00d";
   cursor: pointer;
 }
@@ -168,6 +153,7 @@ body {
   align-items: center;
   border-top: 1px solid #000;
   padding-top: 10px;
+  justify-content: center;
 }
 .tasks__add input[type="text"] {
   margin-right: 10px;

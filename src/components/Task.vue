@@ -1,12 +1,10 @@
 <template>
-  <div class="tasks__item">
-    <input type="checkbox" :checked="task.completed" />
-    <div class="task">
-      <i :class="[task.urgently ? 'fas fa-circle' : '']"></i>
-      <div class="text">{{ task.title }}</div>
-      <div class="data">{{ task.day }}</div>
-      <i @click="onDelete(task.id)" class="fas fa-times"></i>
-    </div>
+  <input type="checkbox" :checked="task.completed" />
+  <div class="task">
+    <i :class="[task.urgently ? 'fas fa-circle' : '']"></i>
+    <div class="text">{{ task.title }}</div>
+    <div class="data">{{ task.day }}</div>
+    <i @click="onDelete(task.id)" class="fas fa-times"></i>
   </div>
 </template>
 
@@ -18,7 +16,7 @@ export default {
   },
   methods: {
     onDelete(id) {
-      this.$store.commit("DELETE_TASK", id)
+      this.$store.commit("DELETE_TASK", id);
     },
   },
 };

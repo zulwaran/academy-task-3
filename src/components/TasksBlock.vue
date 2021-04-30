@@ -1,10 +1,12 @@
 <template>
   <div class="tasks">
-    <div class="tasks__title">{{currentList.text}}</div>
-    <div class="tasks__items" :key="task.id" v-for="task in currentTasks">
-      <Task :task="task" />
+    <div class="tasks__title" v-show="$store.state.showListName">{{ currentList.text }}</div>
+    <div class="tasks__items">
+      <div class="tasks__item" :key="task.id" v-for="task in currentTasks">
+        <Task :task="task" />
+      </div>
     </div>
-    <AddTask />
+    <AddTask v-show="$store.state.showAddTask" />
   </div>
 </template>
 
