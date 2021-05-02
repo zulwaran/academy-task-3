@@ -4,14 +4,17 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "List",
   props: {
     list: Object,
   },
   methods: {
+    ...mapActions(["DELETE_LIST"]),
     onDelete(id) {
-      this.$store.commit("DELETE_LIST", id)
+      this.DELETE_LIST(id);
+      this.$store.commit("LIST_FILTER", this.$store.selectedOption);
     },
   },
 };

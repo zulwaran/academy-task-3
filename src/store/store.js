@@ -1,42 +1,179 @@
 import { createStore } from 'vuex'
-import axios from 'axios'
 
 const store = createStore({
     state: {
+        //Содержит все списки дел полученные из БД
         lists: [],
+        //Содержит все задачи полученные из БД 
         tasks: [],
-        showwListName: false,
+        //Переключатели видимости блока с задачами
+        showListName: false,
         showAddTask: false,
-        visibleList: [],
-        currentList: [],
+        showTasks: false,
+        //Содержит в себе списки дел, которые необходимо отобразить на экране в данный момент
+        visibleLists: [],
+        //Содержит в себе задачи, которые необходимо отобразить на экране в данный момент
         currentTasks: [],
+        //Содержит в себе данные о активном списке дел 
+        currentList: [],
+        //Опция фильтра "по умолчанию"
+        selectedOption: "done",
     },
     mutations: {
+        // Получаем из БД массив списков дел, и сортируем их. 
         SET_LISTS_TO_STATE: (state, lists) => {
             state.lists = lists;
             state.lists.sort((a, b) => a.text.localeCompare(b.text));
+            state.visibleLists = state.lists
         },
+
+        // Получаем из БД массив задач. 
         SET_TASKS_TO_STATE: (state, tasks) => {
             state.tasks = tasks;
         },
-        ADD_LIST(state, addtext) {
+
+        // Добавляем новый список дел. 
+        ADD_LIST(state, newList) {
+            state.lists = [...state.lists, newList]
+            state.lists.sort((a, b) => a.text.localeCompare(b.text));
+            state.visibleLists = state.lists
+        },
+
+        // Добавляем новую задачу. 
+        ADD_TASK(state, newTask) {
+            state.tasks = [...state.tasks, newTask]
+            state.currentTasks = [...state.currentTasks, newTask]
+        },
+
+        // Удаляем список дел и все задачи связанные с ним. Если список был активным, то окно задач становится пустым
+        DELETE_LIST(state, id) {
+            state.lists = state.lists.filter((list) => list.id !== id);
+            state.tasks = state.tasks.filter((task) => task.listId !== id);
+            state.currentTasks = [];
+            if (state.currentList && state.currentList.id === id) {
+                state.showAddTask = false;
+                state.showListName = false;
+                state.showTasks = false;
+            }
+        },
+
+        // Удаляем задачу
+        DELETE_TASK(state, id) {
+            state.tasks = state.tasks.filter((task) => task.id !== id);
+            state.currentTasks = state.currentTasks.filter((task) => task.id !== id)
+        },
+
+        // Получаем активный список дел, выводим на экран задачи связанные с ним
+        GET_CURRENT_LIST(state, list) {
+            state.currentList = list;
+            state.showAddTask = true;
+            state.showListName = true;
+            state.showTasks = true;
+            state.currentTasks = state.tasks.filter((task) => task.listId === list.id)
+        },
+
+        //Меняем статус задачи на противоположный
+        CHANGE_TASK_COMPLITED(state, id) {
+            state.tasks = state.tasks.map((task) => task.id === id ? { ...task, completed: !task.completed } : task)
+        },
+
+        // Проверяем статус списков дел и выдаем им соответсвующий класс
+        COLOR_LIST(state) {
+            for (let list in state.visibleLists) {
+                let count = 0;
+                for (let task in state.tasks) {
+                    if (state.visibleLists[list].id === state.tasks[task].listId && state.tasks[task].completed === true) {
+                        count++;
+                    }
+                }
+                if (state.visibleLists[list].count_tasks === 0) {
+                    state.visibleLists[list].color = "white"
+                } else if (state.visibleLists[list].count_tasks === count) {
+                    state.visibleLists[list].color = "gray"
+                } else {
+                    state.visibleLists[list].color = "green"
+                }
+            }
+        },
+
+        // Получаем выбранную опцию фильтра. При переключении опций, окно с задачами очищается
+        FILTER_OPTION(state, selectedOption) {
+            state.selectedOption = selectedOption,
+                state.showListName = false,
+                state.showAddTask = false,
+                state.showTasks = false
+        },
+
+        // Фильтруем списки дел в зависимости от выбранной опции
+        LIST_FILTER(state, selectedOption) {
+            if (selectedOption == "all") {
+                state.visibleLists = state.lists;
+                return state.visibleLists
+            }
+            if (selectedOption == "done") {
+                state.visibleLists = store.getters.doneLists;
+                return state.visibleLists
+            }
+            if (selectedOption == "works") {
+                state.visibleLists = store.getters.workLists;
+                console.log(state.visibleLists)
+                return state.visibleLists
+            }
+        },
+
+        //Увеличиваем количество задач в списке дел на +1
+        INC_COUNT_TASKS(state, data) {
+            state.lists = state.lists.map((list) => list.id === data.id ? { ...list, count_tasks: data.count_tasks } : list)
+            state.visibleLists = state.visibleLists.map((list) => list.id === data.id ? { ...list, count_tasks: data.count_tasks } : list)
+        },
+
+        //Уменьшаем количество задач в списке дел на -1
+        DEC_COUNT_TASKS(state, data) {
+            state.lists = state.lists.map((list) => list.id === data.id ? { ...list, count_tasks: data.count_tasks } : list)
+            state.visibleLists = state.visibleLists.map((list) => list.id === data.id ? { ...list, count_tasks: data.count_tasks } : list)
+        },
+
+    },
+    actions: {
+
+        //Передаем с БД списки дел и задачи в них. Коммит SET_LISTS_TO_STATE записывает в lists и visibleLists списки дел, коммит SET_TASKS_TO_STATE записывает в tasks все задачи, коммит COLOR_LIST передает статус списка дел, коммит LIST_FILTER выводит на экран отфильтрованный visibleList.
+        async fetchLists({ commit, state }) {
+            const resList = await fetch('http://localhost:5000/lists')
+            const dataList = await resList.json()
+            await commit('SET_LISTS_TO_STATE', dataList)
+            const resTasks = await fetch('http://localhost:5000/tasks')
+            const dataTasks = await resTasks.json()
+            await commit('SET_TASKS_TO_STATE', dataTasks)
+            commit('COLOR_LIST')
+            commit('LIST_FILTER', state.selectedOption)
+        },
+
+        // Создаем новый список дел и сохраняем его в БД. Коммит LIST_FILTER фильтрует новый список, чтобы он оказался в правильном разделе фильтра. 
+        async NEW_LIST({ commit, state }, addtext) {
             if (!addtext) {
                 alert("Введите название списка");
                 return;
             }
-            axios
-                .post('http://localhost:5000/lists', {
-                    text: addtext,
-                    count_tasks: 0,
-                })
-                .then((data) => {
-                    state.lists = [...state.lists, data.data].sort((a, b) => a.text.localeCompare(b.text));
-                    state.visibleList = [...state.visibleList, data.data];
-                    alert("Список дел " + data.data.text + " добавлен");
-                })
+            const newList = {
+                text: addtext,
+                count_tasks: 0,
+            }
+
+            const res = await fetch('http://localhost:5000/lists', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(newList)
+            })
+            const data = await res.json()
+            await commit('ADD_LIST', data)
+            commit('LIST_FILTER', state.selectedOption)
+            return data
         },
 
-        ADD_TASK(state, { text, check }) {
+        //Создаем новую задачу. И сохраняем её в БД.
+        async NEW_TASK({ commit, state }, { text, check }) {
             if (!text) {
                 alert("Введите название задачи");
                 return;
@@ -60,152 +197,153 @@ const store = createStore({
                 minut = "0" + date.getMinutes();
             }
             day = day + "." + month + "." + year + " " + hour + ":" + minut;
-            axios
-                .post('http://localhost:5000/tasks', {
-                    listId: state.currentList.id,
-                    title: text,
-                    day: day,
-                    urgently: check,
-                    completed: false,
-                })
-                .then((data) => {
-                    state.tasks = [...state.tasks, data.data];
-                    state.currentTasks = [...state.currentTasks, data.data];
-                    alert(data.data.title + " добавлено в " + state.currentList.text);
-                })
-        },
 
-        DELETE_LIST(state, id) {
-            if (confirm("Вы действительно хотите удалить список?")) {
-                axios
-                    .delete('http://localhost:5000/lists/' + id)
-                    .then(() => {
-                        state.lists = state.lists.filter((list) => list.id !== id);
-                        state.visibleList = [state.visibleList.filter((list) => list.id !== id)];
-                        state.tasks = state.tasks.filter((task) => task.listId !== id);
-                        state.currentTasks = [];
-                        state.showAddTask = false;
-                        state.showListName = false;
-                    })
+            const newTask = {
+                listId: state.currentList.id,
+                title: text,
+                day: day,
+                urgently: check,
+                completed: false,
             }
-        },
 
-        DELETE_TASK(state, id) {
-            if (confirm("Вы действительно хотите удалить задачу?")) {
-                axios
-                    .delete('http://localhost:5000/tasks/' + id)
-                    .then(() => {
-                        state.tasks = state.tasks.filter((task) => task.id !== id);
-                        state.currentTasks = state.currentTasks.filter((task) => task.id !== id);
-                    })
-            }
-        },
-
-        GET_CURRENT_LIST(state, list) {
-            state.currentList = list;
-            state.showAddTask = true;
-            state.showListName = true;
-            state.currentTasks = state.tasks.filter((task) => task.listId === list.id)
-        },
-
-        /*         COLOR_LIST(state) {
-                    for (let list in state.lists) {
-                        let taskLenght = 0;
-                        let count = 0;
-                        for (let task in state.tasks) {
-                            if (state.lists[list].id === state.tasks[task].listId) {
-                                taskLenght++;
-                            }
-                            if (state.lists[list].id === state.tasks[task].listId && state.tasks[task].completed === true) {
-                                count++;
-                            }
-                            if (taskLenght === count) {
-                                state.lists[list].color = "gray"
-                            }
-                            if (taskLenght > count) {
-                                state.lists[list].color = "green"
-                            }
-                            if (taskLenght === 0) {
-                                state.lists[list].color = "white"
-                            }
-                        }
-                    }
+            const res = await fetch('http://localhost:5000/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
                 },
-        
-                LIST_FILTER(state, selectedOption) {
-                    switch (selectedOption) {
-                        case "all":
-                            state.visibleList = state.lists;
-                            break;
-                        case "done":
-                            state.visibleList = state.lists.filter((list) => {
-                                var count = 0;
-                                for (let task in state.tasks) {
-                                    if (
-                                        state.tasks[task].listId === list.id &&
-                                        state.tasks[task].completed === false
-                                    ) {
-                                        count += 1;
-                                    }
-                                }
-                                if (count === 0) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                            break;
-                        case "works":
-                            state.visibleList = state.lists.filter((list) => {
-                                var count = 0;
-                                for (let task in state.tasks) {
-                                    if (
-                                        state.tasks[task].listId === list.id &&
-                                        state.tasks[task].completed === false
-                                    ) {
-                                        count += 1;
-                                    }
-                                }
-                                if (count > 0) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                            break;
+                body: JSON.stringify(newTask)
+            })
+            const data = await res.json()
+            await commit('ADD_TASK', data)
+            return data
+        },
+
+        // Удаляем из БД задачу
+        async DELETE_TASK({ commit }, id) {
+            if (confirm("Вы действительно хотите удалить задачу?")) {
+                const ref = await fetch(`http://localhost:5000/tasks/${id}`, {
+                    method: 'DELETE'
+                })
+                if (ref.status === 200) {
+                    await commit('DELETE_TASK', id)
+                } else {
+                    alert('Error')
+                }
+            }
+        },
+
+        // Удаляем из БД список дел. Коммит LIST_FILTER выводит на экран новый отфильтрованный список дел
+        async DELETE_LIST({ commit, state }, id) {
+            if (confirm("Вы действительно хотите удалить список?")) {
+                const ref = await fetch(`http://localhost:5000/lists/${id}`, {
+                    method: 'DELETE'
+                })
+                if (ref.status === 200) {
+                    await commit('DELETE_LIST', id)
+                    commit('LIST_FILTER', state.selectedOption)
+
+                } else {
+                    alert('Error')
+                }
+            }
+        },
+
+        // Меняем статус задачи на противоположный, и записываем в БД новое значение. Коммит COLOR_LIST изменяет статус списка дел.  
+        async CHANGE_TASK_COMPLITED({ commit }, id) {
+            const task = await fetch(`http://localhost:5000/tasks/${id}`)
+            const dataTask = await task.json()
+            const updTask = { ...dataTask, completed: !dataTask.completed }
+            const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(updTask)
+            })
+            const data = await res.json()
+            commit('CHANGE_TASK_COMPLITED', id, data)
+            commit('COLOR_LIST')
+        },
+
+        // Увеличиваем счетчик задач в списке дел и записываем новое значение в БД. Коммит COLOR_LIST изменяет статус списка дел.
+        async INC_COUNT_TASKS({ commit }) {
+            const id = this.state.currentList.id
+            const list = await fetch(`http://localhost:5000/lists/${id}`)
+            const dataList = await list.json()
+            const updList = { ...dataList, count_tasks: dataList.count_tasks + 1 }
+            const res = await fetch(`http://localhost:5000/lists/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(updList)
+            })
+            const data = await res.json()
+            commit('INC_COUNT_TASKS', data)
+            commit('COLOR_LIST')
+            return data
+        },
+
+        // Уменьшаем счетчик задач в списке дел и записываем новое значение в БД. Коммит COLOR_LIST изменяет статус списка дел.
+        async DEC_COUNT_TASKS({ commit }) {
+            const id = this.state.currentList.id
+            const list = await fetch(`http://localhost:5000/lists/${id}`)
+            const dataList = await list.json()
+            const updList = { ...dataList, count_tasks: dataList.count_tasks - 1 }
+            const res = await fetch(`http://localhost:5000/lists/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(updList)
+            })
+            const data = await res.json()
+            commit('DEC_COUNT_TASKS', data)
+            commit('COLOR_LIST')
+            return data
+        },
+
+    },
+    getters: {
+
+        //Используются в фильтре списков дел. doneLists возвращает все выполненные списки дел, workLists возвращает все списки дел в "работе"
+        doneLists: state => {
+            return state.lists.filter(list => {
+                var count = 0;
+                for (let task in state.tasks) {
+                    if (
+                        state.tasks[task].listId === list.id &&
+                        state.tasks[task].completed === false
+                    ) {
+                        count += 1;
                     }
-        
-                }, */
-    },
-    actions: {
-        GET_LISTS_FROM_API({ commit }) {
-            return axios('http://localhost:5000/lists', {
-                method: "GET"
+                }
+                if (count === 0) {
+                    return true;
+                } else {
+                    return false;
+                }
             })
-                .then((lists) => {
-                    commit('SET_LISTS_TO_STATE', lists.data)
-                    return lists
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return error
-                })
         },
-        GET_TASKS_FROM_API({ commit }) {
-            return axios('http://localhost:5000/tasks', {
-                method: "GET"
+        workLists: state => {
+            return state.lists.filter(list => {
+                var count = 0;
+                for (let task in state.tasks) {
+                    if (
+                        state.tasks[task].listId === list.id &&
+                        state.tasks[task].completed === false
+                    ) {
+                        count += 1;
+                    }
+                }
+                if (count > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
             })
-                .then((tasks) => {
-                    commit('SET_TASKS_TO_STATE', tasks.data)
-                    return tasks
-                })
-                .catch((error) => {
-                    console.log(error)
-                    return error
-                })
-        },
+        }
     },
-    getters: {},
 })
 
 export default store

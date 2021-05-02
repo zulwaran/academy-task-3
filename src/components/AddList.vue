@@ -7,6 +7,7 @@
 
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "AddList",
   data() {
@@ -15,8 +16,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["NEW_LIST"]),
     addList() {
-      this.$store.commit('ADD_LIST', this.text)
+      this.NEW_LIST(this.text);
       this.text = "";
     },
   },

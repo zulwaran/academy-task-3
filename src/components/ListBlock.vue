@@ -7,7 +7,7 @@
       <div
         :class="['lists__item', list.color]"
         :key="list.id"
-        v-for="list in visibleList"
+        v-for="list in lists"
         @dblclick="getList(list)"
       >
         <List :list="list" />
@@ -25,18 +25,12 @@ import AddList from "./AddList";
 export default {
   name: "ListBlock",
   props: {
-    visibleList: Object,
-    filterList: Object,
+    lists: Object,
   },
   components: {
     FilterList,
     List,
     AddList,
-  },
-  data() {
-    return {
-      filter: "",
-    };
   },
   methods: {
     getList(list) {

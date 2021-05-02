@@ -2,32 +2,56 @@
   "users": [],
   "tasks": [
     {
-      "listId": 1,
-      "title": "Срочная задача",
-      "day": "30.04.21 07:21",
+      "listId": 5,
+      "title": "Срочное дело",
+      "day": "02.05.21 03:57",
       "urgently": true,
-      "completed": false,
-      "id": 1
+      "completed": true,
+      "id": 4
     },
     {
-      "listId": 1,
-      "title": "Обычная задача",
-      "day": "30.04.21 07:21",
+      "listId": 5,
+      "title": "Обычное дело",
+      "day": "02.05.21 04:09",
       "urgently": false,
       "completed": false,
-      "id": 2
+      "id": 6
+    },
+    {
+      "listId": 3,
+      "title": "Первое дело",
+      "day": "02.05.21 05:06",
+      "urgently": true,
+      "completed": true,
+      "id": 7
+    },
+    {
+      "listId": 3,
+      "title": "Второе дело",
+      "day": "02.05.21 05:06",
+      "urgently": false,
+      "completed": true,
+      "id": 8
     }
   ],
   "lists": [
     {
-      "text": "Тестовый список",
-      "count_tasks": 0,
-      "id": 1
+      "text": "Завершенный список",
+      "count_tasks": 2,
+      "id": 3,
+      "color": ""
+    },
+    {
+      "text": "Обычный список",
+      "count_tasks": 2,
+      "id": 5,
+      "color": ""
     },
     {
       "text": "Пустой список",
       "count_tasks": 0,
-      "id": 2
+      "id": 6,
+      "color": ""
     }
   ]
 }

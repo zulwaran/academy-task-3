@@ -15,5 +15,12 @@ export default {
       selectedOption: "done",
     };
   },
+  methods: {
+    async filterLists() {
+      await this.$store.commit("FILTER_OPTION", this.selectedOption);
+      await this.$store.commit("LIST_FILTER", this.selectedOption);
+      this.$store.commit("COLOR_LIST");
+    },
+  },
 };
 </script>

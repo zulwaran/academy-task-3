@@ -1,7 +1,7 @@
 <template>
   <section class="container">
     <div class="todolist">
-      <ListBlock :visibleList="$store.state.lists" />
+      <ListBlock :lists="$store.state.visibleLists" />
       <TaskBlock
         :currentTasks="$store.state.currentTasks"
         :currentList="$store.state.currentList"
@@ -20,17 +20,11 @@ export default {
     ListBlock,
     TaskBlock,
   },
-  props: {},
-  computed: {},
   methods: {
-    ...mapActions(["GET_LISTS_FROM_API", "GET_TASKS_FROM_API"]),
+    ...mapActions(["fetchLists"]),
   },
-  mounted() {
-    this.GET_LISTS_FROM_API();
-    this.GET_TASKS_FROM_API();
-  },
-  data() {
-    return {};
+  async created() {
+    this.fetchLists();
   },
 };
 </script>

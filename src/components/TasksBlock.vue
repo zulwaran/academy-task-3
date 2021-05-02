@@ -2,7 +2,7 @@
   <div class="tasks">
     <div class="tasks__title" v-show="$store.state.showListName">{{ currentList.text }}</div>
     <div class="tasks__items">
-      <div class="tasks__item" :key="task.id" v-for="task in currentTasks">
+      <div class="tasks__item" v-show="$store.state.showTasks" :key="task.id" v-for="task in currentTasks">
         <Task :task="task" />
       </div>
     </div>
@@ -16,7 +16,6 @@ import AddTask from "./AddTask";
 export default {
   name: "TasksBlock",
   props: {
-    tasks: Object,
     currentList: Object,
     currentTasks: Object,
   },

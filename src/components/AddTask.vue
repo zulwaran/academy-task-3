@@ -11,10 +11,9 @@
 
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "AddTask",
-  props: {
-  },
   data() {
     return {
       text: "",
@@ -22,13 +21,19 @@ export default {
     };
   },
   methods: {
-    addTask() {
-      this.$store.commit("ADD_TASK", {
+    ...mapActions(["NEW_TASK", "INC_COUNT_TASKS"]),
+    async addTask() {
+      if (!this.text) {
+        alert("Введите название задачи");
+        return;
+      }
+      this.NEW_TASK({
         text: this.text,
         check: this.check,
       });
       this.text = "";
       this.check = false;
+      this.INC_COUNT_TASKS();
     },
   },
 };
