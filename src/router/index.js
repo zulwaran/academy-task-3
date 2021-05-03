@@ -1,24 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ToDo from '../views/ToDo'
 import Login from '../views/Login'
-import Register from '../views/Register'
 import NotFound from '../views/404'
 
 const routes =
     [
         {
-            path: '/login',
+            path: '/',
             name: 'Login',
             component: Login
         },
         {
-            path: '/register',
-            name: 'Register',
-            component: Register
-        },
-
-        {
-            path: '/',
+            path: '/ToDo',
             name: 'ToDo',
             component: ToDo
         },
