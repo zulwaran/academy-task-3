@@ -32,12 +32,20 @@
       "urgently": false,
       "completed": true,
       "id": 8
+    },
+    {
+      "listId": 3,
+      "title": "Третье дело",
+      "day": "02.05.21 23:18",
+      "urgently": true,
+      "completed": true,
+      "id": 9
     }
   ],
   "lists": [
     {
       "text": "Завершенный список",
-      "count_tasks": 2,
+      "count_tasks": 3,
       "id": 3,
       "color": ""
     },

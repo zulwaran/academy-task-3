@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="addList" class="lists__add">
+  <form @submit.prevent="addList(text)" class="lists__add">
     <input type="text" v-model="text" placeholder="Введите дело" />
     <button>Добавить список</button>
   </form>
@@ -7,7 +7,6 @@
 
 
 <script>
-import { mapActions } from "vuex";
 export default {
   name: "AddList",
   data() {
@@ -16,10 +15,41 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["NEW_LIST"]),
-    addList() {
-      this.NEW_LIST(this.text);
+    //Добавляем новый список задач
+    async addList(text) {
+      if (!text) {
+        alert("Введите название списка");
+        return;
+      }
+      const newList = {
+        text: text,
+        count_tasks: 0,
+      };
+
+      const res = await fetch("http://localhost:5000/lists", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(newList),
+      });
+      const data = await res.json();
+      this.$store.state.lists = [...this.$store.state.lists, data];
+      this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
+      this.$store.state.visibleLists = this.$store.state.lists;
+
       this.text = "";
+      
+      //Осуществляем фильтрацию и вывод на экран нового списка
+      if (this.$store.state.selectedOption == "all") {
+        this.$store.state.visibleLists = this.$store.state.lists;
+      }
+      if (this.$store.state.selectedOption == "done") {
+        this.$store.state.visibleLists = this.$store.getters.doneLists;
+      }
+      if (this.$store.state.selectedOption == "works") {
+        this.$store.state.visibleLists = this.$store.getters.workLists;
+      }
     },
   },
 };

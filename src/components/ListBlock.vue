@@ -34,12 +34,17 @@ export default {
   },
   methods: {
     getList(list) {
-      this.$store.commit("GET_CURRENT_LIST", list);
+      this.$store.state.currentList = list;
+      this.$store.state.showAddTask = true;
+      this.$store.state.showListName = true;
+      this.$store.state.showTasks = true;
+      this.$store.state.currentTasks = this.$store.state.tasks.filter(
+        (task) => task.listId === list.id
+      );
     },
   },
 };
 </script>
 
 <style scoped>
-
 </style>

@@ -89,10 +89,10 @@ body {
 }
 
 .green {
-  background: green;
+  background: #4ab54a70;
 }
 .gray {
-  background: grey;
+  background: #7564644d;
 }
 .white {
   background: inherit;
