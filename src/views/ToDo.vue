@@ -1,5 +1,7 @@
 <template>
   <section class="container">
+    <h1>Привет, {{name}}</h1>
+    <button class="logout" @click="Logout">Logout</button>
     <div class="todolist">
       <ListBlock :lists="$store.state.visibleLists" />
       <TaskBlock
@@ -13,6 +15,9 @@
 <script>
 import ListBlock from "../components/ListBlock";
 import TaskBlock from "../components/TasksBlock";
+import { ref, onBeforeMount } from "vue";
+import firebase from "firebase";
+
 export default {
   name: "ToDo",
   components: {
@@ -20,6 +25,26 @@ export default {
     TaskBlock,
   },
   methods: {},
+  setup() {
+    const name = ref("");
+
+    onBeforeMount(() => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        name.value = user.email.split('@')[0];
+      }
+    });
+
+    const Logout = () =>{
+      firebase.auth().signOut().then(()=>console.log("Sign Out")).catch(err => alert(err.message))
+    }
+
+
+    return {
+      name,
+      Logout
+      };
+  },
   async created() {
     //Получаем из БД данные о списках дел
     const resList = await fetch("http://localhost:5000/lists");
