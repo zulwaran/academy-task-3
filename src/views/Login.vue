@@ -1,38 +1,27 @@
 <template>
   <div class="login">
-    <h1>Авторизация</h1>
-    <form class="login__inner" @submit.prevent="Login">
+    <form class="login__inner" @submit.prevent="login">
+      <h1>Авторизация</h1>
       <label>Email</label>
-      <input type="email" placeholder="Email" v-model="email" />
+      <input required v-model="email" type="email" placeholder="Name" />
       <label>Password</label>
-      <input type="password" placeholder="Password" v-model="password" />
-      <button type="submit" value="Login">Вход</button>
-      <p>
-        Need an account?<router-link to="/register">Регистрация</router-link>
-      </p>
+      <input
+        required
+        v-model="password"
+        type="password"
+        placeholder="Password"
+      />
+      <router-link to="/ToDo"><button type="submit">Login</button></router-link>
     </form>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
-import firebase from "firebase";
 export default {
-  setup() {
-    const email = ref("");
-    const password = ref("");
-
-    const Login = () => {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email.value, password.value)
-        .then((data) => console.log(data))
-        .catch((err) => alert(err.message));
-    };
+  data() {
     return {
-      Login,
-      email,
-      password,
+      email: "",
+      password: "",
     };
   },
 };
@@ -52,7 +41,6 @@ export default {
 }
 .login h1 {
   margin-bottom: 20px;
-  text-align: center;
 }
 .login label {
   margin-bottom: 5px;
@@ -61,7 +49,7 @@ export default {
   margin-bottom: 10px;
   padding: 5px 10px;
 }
-.login button {
+.login button{
   padding: 5px 25px;
 }
 </style>
