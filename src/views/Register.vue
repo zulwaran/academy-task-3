@@ -1,13 +1,15 @@
 <template>
-  <div class="login">
-    <h1>Авторизация</h1>
-    <form class="login__inner" @submit.prevent="Login">
+  <div class="register">
+    <h1>Регистрация</h1>
+    <form class="register__inner" @submit.prevent="Register">
       <label>Email</label>
       <input type="email" placeholder="Email" v-model="email" />
       <label>Password</label>
       <input type="password" placeholder="Password" v-model="password" />
-      <button type="submit" value="Login">Вход</button>
-      <p>Нет аккаунта?<router-link to="/register">Регистрация</router-link></p>
+      <button type="submit" value="Register">Регистрация</button>
+      <p>
+        <router-link to="/login">Назад</router-link>
+      </p>
     </form>
   </div>
 </template>
@@ -15,20 +17,30 @@
 <script>
 import { ref } from "vue";
 import firebase from "firebase";
+import {createUser} from '../firebase'
+
 export default {
   setup() {
     const email = ref("");
     const password = ref("");
 
-    const Login = () => {
+    const Register = () => {
       firebase
         .auth()
-        .signInWithEmailAndPassword(email.value, password.value)
-        .then((data) => data)
+        .createUserWithEmailAndPassword(email.value, password.value)
+        .then((data) => {
+          const form = {
+            name: data.user.email,
+            uid: data.user.uid
+          }
+
+          createUser({...form}
+          )
+        })
         .catch((err) => alert(err.message));
     };
     return {
-      Login,
+      Register,
       email,
       password,
     };
@@ -37,29 +49,29 @@ export default {
 </script>
 
 <style scoped>
-.login {
+.register {
   width: 800px;
   padding: 10px;
   margin: 0 auto;
 }
-.login__inner {
+.register__inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
 }
-.login h1 {
+.register h1 {
   margin-bottom: 20px;
   text-align: center;
 }
-.login label {
+.register label {
   margin-bottom: 5px;
 }
-.login input {
+.register input {
   margin-bottom: 10px;
   padding: 5px 10px;
 }
-.login button {
+.register button {
   padding: 5px 25px;
 }
 </style>

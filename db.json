@@ -2,64 +2,80 @@
   "users": [],
   "tasks": [
     {
-      "listId": 5,
+      "listId": 3,
       "title": "Срочное дело",
-      "day": "02.05.21 03:57",
+      "day": "04.05.21 20:32",
       "urgently": true,
-      "completed": true,
-      "id": 4
+      "completed": false,
+      "id": 1
     },
     {
-      "listId": 5,
+      "listId": 3,
       "title": "Обычное дело",
-      "day": "02.05.21 04:09",
+      "day": "04.05.21 20:32",
       "urgently": false,
       "completed": false,
-      "id": 6
+      "id": 2
     },
     {
-      "listId": 3,
-      "title": "Первое дело",
-      "day": "02.05.21 05:06",
+      "listId": 2,
+      "title": "Срочное дело",
+      "day": "04.05.21 20:32",
       "urgently": true,
       "completed": true,
-      "id": 7
+      "id": 3
     },
     {
-      "listId": 3,
-      "title": "Второе дело",
-      "day": "02.05.21 05:06",
+      "listId": 2,
+      "title": "Обычное дело №1",
+      "day": "04.05.21 20:32",
       "urgently": false,
       "completed": true,
-      "id": 8
+      "id": 4,
+      "color": "green"
     },
     {
-      "listId": 3,
-      "title": "Третье дело",
-      "day": "02.05.21 23:18",
-      "urgently": true,
+      "listId": 2,
+      "title": "Обычное дело №2",
+      "day": "04.05.21 20:32",
+      "urgently": false,
       "completed": true,
-      "id": 9
+      "id": 5
+    },
+    {
+      "listId": 4,
+      "title": "333",
+      "day": "04.05.21 22:33",
+      "urgently": false,
+      "completed": true,
+      "id": 6
     }
   ],
   "lists": [
     {
-      "text": "Завершенный список",
-      "count_tasks": 3,
-      "id": 3,
-      "color": ""
-    },
-    {
-      "text": "Обычный список",
-      "count_tasks": 2,
-      "id": 5,
-      "color": ""
-    },
-    {
+      "uid": "2AR3ePPJEaZa8blTs4Zq3NFm8Dm2",
       "text": "Пустой список",
       "count_tasks": 0,
-      "id": 6,
-      "color": ""
+      "id": 1
+    },
+    {
+      "uid": "2AR3ePPJEaZa8blTs4Zq3NFm8Dm2",
+      "text": "Завершенный список",
+      "count_tasks": 3,
+      "id": 2
+    },
+    {
+      "uid": "2AR3ePPJEaZa8blTs4Zq3NFm8Dm2",
+      "text": "Обычный список",
+      "count_tasks": 2,
+      "id": 3
+    },
+    {
+      "uid": "CKCJV3eh2zLblJMW5jAnqSonxwG2",
+      "text": "123",
+      "count_tasks": 1,
+      "color": "",
+      "id": 4
     }
   ]
 }

@@ -1,7 +1,7 @@
 <template>
   <input
     type="checkbox"
-    @click="taskCompleted(task.id)"
+    @click="taskCompleted(task.id, task.listId)"
     :checked="task.completed"
   />
   <div class="task">
@@ -13,14 +13,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 export default {
   name: "Task",
   props: {
     task: Object,
   },
   methods: {
-    ...mapActions(["DELETE_TASK", "CHANGE_TASK_COMPLITED", "DEC_COUNT_TASKS"]),
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить задачу?")) {
         const ref = await fetch(`http://localhost:5000/tasks/${id}`, {
@@ -80,8 +78,7 @@ export default {
       return data;
     },
 
-    
-    async taskCompleted(id) {
+    async taskCompleted(id, /* listId */) {
       const task = await fetch(`http://localhost:5000/tasks/${id}`);
       const dataTask = await task.json();
       const updTask = { ...dataTask, completed: !dataTask.completed };
@@ -107,6 +104,7 @@ export default {
             count++;
           }
         }
+        console.log(this.$store.state.visibleLists[list])
         if (this.$store.state.visibleLists[list].count_tasks === 0) {
           this.$store.state.visibleLists[list].color = "white";
         } else if (this.$store.state.visibleLists[list].count_tasks === count) {
@@ -114,6 +112,23 @@ export default {
         } else {
           this.$store.state.visibleLists[list].color = "green";
         }
+        console.log(this.$store.state.visibleLists[list].color)
+
+
+        /* const atask = await fetch(`http://localhost:5000/tasks/${listId}`);
+        const adataTask = await atask.json();
+        const aupdTask = { ...adataTask, color: this.$store.state.visibleLists[list].color };
+        const ares = await fetch(`http://localhost:5000/tasks/${listId}`, {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(aupdTask),
+        });
+        const adata = await ares.json();
+        this.$store.state.lists = this.$store.state.lists.map((list) =>
+          list.id === adata.id ? { ...list, color: this.$store.state.visibleLists[list].color } : task
+        ); */
       }
     },
   },

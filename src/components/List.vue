@@ -4,14 +4,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 export default {
   name: "List",
   props: {
     list: Object,
   },
   methods: {
-    ...mapActions(["DELETE_LIST"]),
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить список?")) {
         const ref = await fetch(`http://localhost:5000/lists/${id}`, {

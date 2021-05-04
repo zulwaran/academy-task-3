@@ -17,6 +17,7 @@ export default {
   },
   methods: {
     async filterLists({ selectedOption = this.selectedOption }) {
+      console.log(this.$store.state.lists)
       this.$store.state.selectedOption = selectedOption
       this.$store.state.showListName = false;
       this.$store.state.showAddTask = false;

@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 
 const store = createStore({
     state: {
+        uid: '',
         //Содержит все списки дел полученные из БД
         lists: [],
         //Содержит все задачи полученные из БД 

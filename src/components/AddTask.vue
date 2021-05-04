@@ -45,7 +45,6 @@ export default {
         minut = "0" + date.getMinutes();
       }
       day = day + "." + month + "." + year + " " + hour + ":" + minut;
-
       const newTask = {
         listId: this.$store.state.currentList.id,
         title: text,
@@ -53,7 +52,6 @@ export default {
         urgently: check,
         completed: false,
       };
-
       const resTask = await fetch("http://localhost:5000/tasks", {
         method: "POST",
         headers: {
@@ -67,7 +65,6 @@ export default {
         ...this.$store.state.currentTasks,
         dataTask,
       ];
-
       this.text = "";
       this.check = false;
 
@@ -84,12 +81,18 @@ export default {
         body: JSON.stringify(updList),
       });
       const dataInc = await putList.json();
+      this.$store.state.lists = this.$store.state.lists.map((list) =>
+        list.id === dataInc.id
+          ? { ...list, count_tasks: dataInc.count_tasks }
+          : list
+      );
       this.$store.state.visibleLists = this.$store.state.visibleLists.map(
         (list) =>
           list.id === dataInc.id
             ? { ...list, count_tasks: dataInc.count_tasks }
             : list
       );
+
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -101,7 +104,6 @@ export default {
             count++;
           }
         }
-
         //Обновляем статус списков дел
         if (this.$store.state.visibleLists[list].count_tasks === 0) {
           this.$store.state.visibleLists[list].color = "white";

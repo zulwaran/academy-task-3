@@ -1,5 +1,7 @@
 <template>
   <section class="container">
+    <h1>Привет, {{ name }}</h1>
+    <button class="logout" @click="Logout">Logout</button>
     <div class="todolist">
       <ListBlock :lists="$store.state.visibleLists" />
       <TaskBlock
@@ -7,27 +9,62 @@
         :currentList="$store.state.currentList"
       />
     </div>
+    <button @click="aaa">ЖМИ</button>
   </section>
 </template>
 
 <script>
 import ListBlock from "../components/ListBlock";
 import TaskBlock from "../components/TasksBlock";
+import { onBeforeMount } from "vue";
+import firebase from "firebase";
+
 export default {
   name: "ToDo",
   components: {
     ListBlock,
     TaskBlock,
   },
-  methods: {},
+  methods: {
+    aaa() {
+      console.log(this.$store.state.uid);
+      console.log(this.name);
+    },
+  },
+  data() {
+    return {
+      name: "",
+    };
+  },
+  setup() {
+    onBeforeMount(() => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        localStorage.name = user.email.split("@")[0];
+        localStorage.uid = user.uid;
+      }
+    });
+
+    const Logout = () => {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => console.log("Sign Out"))
+        .catch((err) => alert(err.message));
+    };
+    return {
+      Logout,
+    };
+  },
   async created() {
     //Получаем из БД данные о списках дел
     const resList = await fetch("http://localhost:5000/lists");
     const dataList = await resList.json();
-    this.$store.state.lists = dataList;
+    this.$store.state.lists = dataList.filter(
+      (list) => list.uid === this.$store.state.uid
+    );
     this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
     this.$store.state.visibleLists = this.$store.state.lists;
-    console.log();
 
     //Получаем из БД данные о задачах
     const resTasks = await fetch("http://localhost:5000/tasks");
@@ -56,6 +93,12 @@ export default {
       } else {
         this.$store.state.visibleLists[list].color = "green";
       }
+    }
+  },
+  mounted() {
+    if (localStorage.uid) {
+      this.$store.state.uid = localStorage.uid;
+      this.name = localStorage.name;
     }
   },
 };

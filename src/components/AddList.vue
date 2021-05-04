@@ -22,8 +22,10 @@ export default {
         return;
       }
       const newList = {
+        uid: this.$store.state.uid,
         text: text,
         count_tasks: 0,
+        color: '',
       };
 
       const res = await fetch("http://localhost:5000/lists", {
