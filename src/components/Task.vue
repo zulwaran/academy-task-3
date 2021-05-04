@@ -21,7 +21,7 @@ export default {
   methods: {
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить задачу?")) {
-        const ref = await fetch(`http://localhost:5000/tasks/${id}`, {
+        const ref = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`, {
           method: "DELETE",
         });
         if (ref.status === 200) {
@@ -36,10 +36,10 @@ export default {
         }
       }
       const currentId = this.$store.state.currentList.id;
-      const list = await fetch(`http://localhost:5000/lists/${currentId}`);
+      const list = await fetch(process.env.VUE_APP_URL + `/lists/${currentId}`);
       const dataList = await list.json();
       const updList = { ...dataList, count_tasks: dataList.count_tasks - 1 };
-      const res = await fetch(`http://localhost:5000/lists/${currentId}`, {
+      const res = await fetch(process.env.VUE_APP_URL + `/lists/${currentId}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -78,11 +78,11 @@ export default {
       return data;
     },
 
-    async taskCompleted(id, /* listId */) {
-      const task = await fetch(`http://localhost:5000/tasks/${id}`);
+    async taskCompleted(id) {
+      const task = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`);
       const dataTask = await task.json();
       const updTask = { ...dataTask, completed: !dataTask.completed };
-      const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      const res = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -104,7 +104,6 @@ export default {
             count++;
           }
         }
-        console.log(this.$store.state.visibleLists[list])
         if (this.$store.state.visibleLists[list].count_tasks === 0) {
           this.$store.state.visibleLists[list].color = "white";
         } else if (this.$store.state.visibleLists[list].count_tasks === count) {
@@ -112,23 +111,6 @@ export default {
         } else {
           this.$store.state.visibleLists[list].color = "green";
         }
-        console.log(this.$store.state.visibleLists[list].color)
-
-
-        /* const atask = await fetch(`http://localhost:5000/tasks/${listId}`);
-        const adataTask = await atask.json();
-        const aupdTask = { ...adataTask, color: this.$store.state.visibleLists[list].color };
-        const ares = await fetch(`http://localhost:5000/tasks/${listId}`, {
-          method: "PUT",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify(aupdTask),
-        });
-        const adata = await ares.json();
-        this.$store.state.lists = this.$store.state.lists.map((list) =>
-          list.id === adata.id ? { ...list, color: this.$store.state.visibleLists[list].color } : task
-        ); */
       }
     },
   },

@@ -52,7 +52,7 @@ export default {
         urgently: check,
         completed: false,
       };
-      const resTask = await fetch("http://localhost:5000/tasks", {
+      const resTask = await fetch(process.env.VUE_APP_URL+"/tasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -70,10 +70,10 @@ export default {
 
       // Увеличиваем количество задач в текущем списке
       const id = this.$store.state.currentList.id;
-      const list = await fetch(`http://localhost:5000/lists/${id}`);
+      const list = await fetch(process.env.VUE_APP_URL+`/lists/${id}`);
       const dataList = await list.json();
       const updList = { ...dataList, count_tasks: dataList.count_tasks + 1 };
-      const putList = await fetch(`http://localhost:5000/lists/${id}`, {
+      const putList = await fetch(process.env.VUE_APP_URL+`/lists/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",

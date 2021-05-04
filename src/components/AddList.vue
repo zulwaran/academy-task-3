@@ -28,7 +28,7 @@ export default {
         color: '',
       };
 
-      const res = await fetch("http://localhost:5000/lists", {
+      const res = await fetch(process.env.VUE_APP_URL+"/lists", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
