@@ -5,7 +5,8 @@
 <script>
 import { onBeforeMount } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/auth";
 export default {
   name: "App",
   setup() {
@@ -37,21 +38,39 @@ body {
   max-width: 1920px;
   min-width: 320px;
 }
-.container {
-  justify-content: center;
+.todo-nav {
+  max-width: 700px;
+  margin: 0 auto 20px;
   display: flex;
-  position: relative;
-  padding: 10px;
+  justify-content: center;
 }
 .todolist {
   display: flex;
   position: relative;
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
+  justify-content: center;
 }
+.todo-nav button {
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: bold;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#acd6ef),
+    to(#6ec2e8)
+  );
+  border-radius: 30px;
+  border: 1px solid #66add6;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 50%);
+  padding: 3px 25px;
+  outline: none;
+}
+
 .lists {
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
+  border: 1px solid #000;
 }
 .lists__filter {
   text-align: center;
@@ -103,6 +122,22 @@ body {
 .lists__add button {
   padding: 5px;
   cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: bold;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#acd6ef),
+    to(#6ec2e8)
+  );
+  border-radius: 30px;
+  border: 1px solid #66add6;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 50%);
+  outline: none;
 }
 
 .green {
@@ -119,8 +154,7 @@ body {
   padding: 10px;
   min-width: 530px;
   margin-left: 10px;
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
+  border: 1px solid #000;
 }
 .tasks__title {
   text-align: center;
@@ -181,8 +215,24 @@ body {
   margin-right: 10px;
 }
 .tasks__add button {
-  padding: 5px;
+  padding: 5px 10px;
   cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: bold;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#acd6ef),
+    to(#6ec2e8)
+  );
+  border-radius: 30px;
+  border: 1px solid #66add6;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 50%);
+  outline: none;
 }
 .checkbox {
   margin-right: 10px;
