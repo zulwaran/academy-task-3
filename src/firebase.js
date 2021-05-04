@@ -1,4 +1,5 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAYDMajV7G4NupPZzeXLU4d3dkc8M50UqQ",
@@ -13,18 +14,10 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 
 const db = firebaseApp.firestore()
-const listsCollection = db.collection('lists')
-const tasksCollection = db.collection('tasks')
 const usersCollection = db.collection('users')
 
 export const createUser = user => {return usersCollection.add(user)}
-export const createList = list => { return listsCollection.add(list) }
-export const createTask = task => { return tasksCollection.add(task) }
-export const getUser = async id => {
-    const user = await usersCollection.doc(id).get()
-    console.log(user.data())
-    return user.exists ? user.data() : null
-}
+
 
 
 

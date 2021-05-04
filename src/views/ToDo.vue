@@ -1,7 +1,9 @@
 <template>
   <section class="container">
-    <h1>Привет, {{ name }}</h1>
-    <button class="logout" @click="Logout">Logout</button>
+    <div class="todo-nav">
+      <h1>Привет, {{ name }}</h1>
+      <button class="logout" @click="Logout">Logout</button>
+    </div>
     <div class="todolist">
       <ListBlock :lists="$store.state.visibleLists" />
       <TaskBlock
@@ -9,7 +11,6 @@
         :currentList="$store.state.currentList"
       />
     </div>
-    <button @click="aaa">ЖМИ</button>
   </section>
 </template>
 
@@ -17,7 +18,9 @@
 import ListBlock from "../components/ListBlock";
 import TaskBlock from "../components/TasksBlock";
 import { onBeforeMount } from "vue";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 
 export default {
   name: "ToDo",
@@ -25,12 +28,7 @@ export default {
     ListBlock,
     TaskBlock,
   },
-  methods: {
-    aaa() {
-      console.log(this.$store.state.uid);
-      console.log(this.name);
-    },
-  },
+  methods: {},
   data() {
     return {
       name: "",
@@ -56,9 +54,10 @@ export default {
       Logout,
     };
   },
-  async created() {
+
+  async beforeMount() {
     //Получаем из БД данные о списках дел
-    const resList = await fetch("http://localhost:5000/lists");
+    const resList = await fetch(process.env.VUE_APP_URL + "/lists");
     const dataList = await resList.json();
     this.$store.state.lists = dataList.filter(
       (list) => list.uid === this.$store.state.uid
@@ -67,7 +66,7 @@ export default {
     this.$store.state.visibleLists = this.$store.state.lists;
 
     //Получаем из БД данные о задачах
-    const resTasks = await fetch("http://localhost:5000/tasks");
+    const resTasks = await fetch(process.env.VUE_APP_URL + "/tasks");
     const dataTasks = await resTasks.json();
     this.$store.state.tasks = dataTasks;
 
