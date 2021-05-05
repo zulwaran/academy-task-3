@@ -20,7 +20,7 @@ export default {
     };
   },
   methods: {
-    //Добавляем новую задачу в список задач
+    //Добавляем новую задачу в список дел
     async addTask(text, check) {
       if (!this.text) {
         alert("Введите название задачи");
@@ -52,7 +52,7 @@ export default {
         urgently: check,
         completed: false,
       };
-      const resTask = await fetch(process.env.VUE_DB_URL+"/tasks", {
+      const resTask = await fetch(process.env.VUE_DB_URL + "/tasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -68,12 +68,12 @@ export default {
       this.text = "";
       this.check = false;
 
-      // Увеличиваем количество задач в текущем списке
+      // Увеличиваем количество задач в текущем списке дел
       const id = this.$store.state.currentList.id;
-      const list = await fetch(process.env.VUE_DB_URL+`/lists/${id}`);
+      const list = await fetch(process.env.VUE_DB_URL + `/lists/${id}`);
       const dataList = await list.json();
       const updList = { ...dataList, count_tasks: dataList.count_tasks + 1 };
-      const putList = await fetch(process.env.VUE_DB_URL+`/lists/${id}`, {
+      const putList = await fetch(process.env.VUE_DB_URL + `/lists/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -93,6 +93,7 @@ export default {
             : list
       );
 
+      //Обновляем статус списков дел
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -104,7 +105,6 @@ export default {
             count++;
           }
         }
-        //Обновляем статус списков дел
         if (this.$store.state.visibleLists[list].count_tasks === 0) {
           this.$store.state.visibleLists[list].color = "white";
         } else if (this.$store.state.visibleLists[list].count_tasks === count) {

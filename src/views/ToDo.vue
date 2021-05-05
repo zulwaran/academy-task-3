@@ -35,6 +35,7 @@ export default {
     };
   },
   setup() {
+    //После авторизации записываем в локальное хранилище имя и uid пользователя
     onBeforeMount(() => {
       const user = firebase.auth().currentUser;
       if (user) {
@@ -43,6 +44,7 @@ export default {
       }
     });
 
+    //Выход с аккаунта
     const Logout = () => {
       firebase
         .auth()

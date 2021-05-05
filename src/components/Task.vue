@@ -20,6 +20,7 @@ export default {
   },
   methods: {
     async onDelete(id) {
+      //Удаляем задачу
       if (confirm("Вы действительно хотите удалить задачу?")) {
         const ref = await fetch(process.env.VUE_DB_URL + `/tasks/${id}`, {
           method: "DELETE",
@@ -35,6 +36,8 @@ export default {
           alert("Error");
         }
       }
+
+      //Уменьшаем количество задач в списке дел
       const currentId = this.$store.state.currentList.id;
       const list = await fetch(process.env.VUE_DB_URL + `/lists/${currentId}`);
       const dataList = await list.json();
@@ -56,6 +59,8 @@ export default {
             ? { ...list, count_tasks: data.count_tasks }
             : list
       );
+
+      //Отображаем статус списков дел
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -79,6 +84,7 @@ export default {
     },
 
     async taskCompleted(id) {
+      //Меняем статус задачи
       const task = await fetch(process.env.VUE_DB_URL + `/tasks/${id}`);
       const dataTask = await task.json();
       const updTask = { ...dataTask, completed: !dataTask.completed };
@@ -93,6 +99,8 @@ export default {
       this.$store.state.tasks = this.$store.state.tasks.map((task) =>
         task.id === data.id ? { ...task, completed: !task.completed } : task
       );
+
+      //Обновляем статусы задач
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {

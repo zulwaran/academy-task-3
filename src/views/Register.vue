@@ -27,6 +27,7 @@ export default {
     const email = ref("");
     const password = ref("");
 
+    //Регистрация нового пользователя
     const Register = () => {
       firebase
         .auth()

@@ -16,12 +16,16 @@ export default {
     };
   },
   methods: {
+    //Получаем опцию из селекта
     async filterLists({ selectedOption = this.selectedOption }) {
-      this.$store.state.selectedOption = selectedOption
+      this.$store.state.selectedOption = selectedOption;
+
+      //При перключении опции, отключаем видимость задач
       this.$store.state.showListName = false;
       this.$store.state.showAddTask = false;
       this.$store.state.showTasks = false;
 
+      //Фильтруем списки дел
       if (selectedOption == "all") {
         this.$store.state.visibleLists = this.$store.state.lists;
       }
@@ -31,7 +35,8 @@ export default {
       if (selectedOption == "works") {
         this.$store.state.visibleLists = this.$store.getters.workLists;
       }
-      
+
+      //Отображаем статус списков дел
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {

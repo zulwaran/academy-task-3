@@ -11,8 +11,9 @@ export default {
   },
   methods: {
     async onDelete(id) {
+      //Удаляем список дел
       if (confirm("Вы действительно хотите удалить список?")) {
-        const ref = await fetch(process.env.VUE_DB_URL+`/lists/${id}`, {
+        const ref = await fetch(process.env.VUE_DB_URL + `/lists/${id}`, {
           method: "DELETE",
         });
         if (ref.status === 200) {
@@ -34,6 +35,8 @@ export default {
         } else {
           alert("Error");
         }
+
+        //Фильтруем новый список дел
         if (this.$store.state.selectedOption == "all") {
           this.$store.state.visibleLists = this.$store.state.lists;
         }

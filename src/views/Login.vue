@@ -24,6 +24,7 @@ export default {
     const email = ref("");
     const password = ref("");
 
+    //Авторизация пользователя
     const Login = () => {
       firebase
         .auth()
@@ -41,7 +42,7 @@ export default {
 </script>
 
 <style scoped>
-.container{
+.container {
   margin-top: 20px;
   text-align: center;
 }

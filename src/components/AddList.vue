@@ -15,7 +15,7 @@ export default {
     };
   },
   methods: {
-    //Добавляем новый список задач
+    //Добавляем новый список дел
     async addList(text) {
       if (!text) {
         alert("Введите название списка");
@@ -42,7 +42,7 @@ export default {
 
       this.text = "";
       
-      //Осуществляем фильтрацию и вывод на экран нового списка
+      //Осуществляем фильтрацию и вывод на экран нового списка дел
       if (this.$store.state.selectedOption == "all") {
         this.$store.state.visibleLists = this.$store.state.lists;
       }
