@@ -12,7 +12,7 @@ export default {
   methods: {
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить список?")) {
-        const ref = await fetch(process.env.VUE_APP_URL+`/lists/${id}`, {
+        const ref = await fetch(process.env.VUE_DB_URL+`/lists/${id}`, {
           method: "DELETE",
         });
         if (ref.status === 200) {

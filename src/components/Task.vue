@@ -21,7 +21,7 @@ export default {
   methods: {
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить задачу?")) {
-        const ref = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`, {
+        const ref = await fetch(process.env.VUE_DB_URL + `/tasks/${id}`, {
           method: "DELETE",
         });
         if (ref.status === 200) {
@@ -36,10 +36,10 @@ export default {
         }
       }
       const currentId = this.$store.state.currentList.id;
-      const list = await fetch(process.env.VUE_APP_URL + `/lists/${currentId}`);
+      const list = await fetch(process.env.VUE_DB_URL + `/lists/${currentId}`);
       const dataList = await list.json();
       const updList = { ...dataList, count_tasks: dataList.count_tasks - 1 };
-      const res = await fetch(process.env.VUE_APP_URL + `/lists/${currentId}`, {
+      const res = await fetch(process.env.VUE_DB_URL + `/lists/${currentId}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -79,10 +79,10 @@ export default {
     },
 
     async taskCompleted(id) {
-      const task = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`);
+      const task = await fetch(process.env.VUE_DB_URL + `/tasks/${id}`);
       const dataTask = await task.json();
       const updTask = { ...dataTask, completed: !dataTask.completed };
-      const res = await fetch(process.env.VUE_APP_URL + `/tasks/${id}`, {
+      const res = await fetch(process.env.VUE_DB_URL + `/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",

@@ -57,7 +57,7 @@ export default {
 
   async beforeMount() {
     //Получаем из БД данные о списках дел
-    const resList = await fetch(process.env.VUE_APP_URL + "/lists");
+    const resList = await fetch(process.env.VUE_DB_URL + "/lists");
     const dataList = await resList.json();
     this.$store.state.lists = dataList.filter(
       (list) => list.uid === this.$store.state.uid
@@ -66,7 +66,7 @@ export default {
     this.$store.state.visibleLists = this.$store.state.lists;
 
     //Получаем из БД данные о задачах
-    const resTasks = await fetch(process.env.VUE_APP_URL + "/tasks");
+    const resTasks = await fetch(process.env.VUE_DB_URL + "/tasks");
     const dataTasks = await resTasks.json();
     this.$store.state.tasks = dataTasks;
 
