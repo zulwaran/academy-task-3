@@ -11,6 +11,9 @@
 
 
 <script>
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { db } from "../firebase";
 export default {
   name: "AddTask",
   data() {
@@ -52,48 +55,40 @@ export default {
         urgently: check,
         completed: false,
       };
-      const resTask = await fetch(process.env.VUE_DB_URL + "/tasks", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(newTask),
-      });
-      const dataTask = await resTask.json();
-      this.$store.state.tasks = [...this.$store.state.tasks, dataTask];
-      this.$store.state.currentTasks = [
-        ...this.$store.state.currentTasks,
-        dataTask,
-      ];
+
+      await db
+        .collection("tasks")
+        .doc()
+        .set({
+          listId: newTask.listId,
+          title: newTask.title,
+          day: newTask.day,
+          urgently: newTask.urgently,
+          completed: newTask.completed,
+        })
+        .then(() => {
+          this.$store.state.tasks = [...this.$store.state.lists, newTask];
+          this.$store.state.currentTasks = [
+            ...this.$store.state.currentTasks,
+            newTask,
+          ];
+        });
       this.text = "";
       this.check = false;
 
-      // Увеличиваем количество задач в текущем списке дел
-      const id = this.$store.state.currentList.id;
-      const list = await fetch(process.env.VUE_DB_URL + `/lists/${id}`);
-      const dataList = await list.json();
-      const updList = { ...dataList, count_tasks: dataList.count_tasks + 1 };
-      const putList = await fetch(process.env.VUE_DB_URL + `/lists/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(updList),
+      const listsRef = await db.collection("lists");
+      let snapshot = await listsRef
+        .where("id", "==", this.$store.state.currentList.id)
+        .get();
+      await snapshot.forEach((doc) => {
+        const incListId = doc.id;
+        var icrementList = db.collection("lists").doc(incListId);
+        icrementList.update({
+          count_tasks: firebase.firestore.FieldValue.increment(1),
+        });
       });
-      const dataInc = await putList.json();
-      this.$store.state.lists = this.$store.state.lists.map((list) =>
-        list.id === dataInc.id
-          ? { ...list, count_tasks: dataInc.count_tasks }
-          : list
-      );
-      this.$store.state.visibleLists = this.$store.state.visibleLists.map(
-        (list) =>
-          list.id === dataInc.id
-            ? { ...list, count_tasks: dataInc.count_tasks }
-            : list
-      );
 
-      //Обновляем статус списков дел
+      /*       //Обновляем статус списков дел
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -112,7 +107,7 @@ export default {
         } else {
           this.$store.state.visibleLists[list].color = "green";
         }
-      }
+      } */
     },
   },
 };
