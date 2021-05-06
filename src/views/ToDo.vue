@@ -22,7 +22,7 @@ import { onBeforeMount } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-import { db } from "../firebase";
+/* import {test1} from "../firebase"; */
 
 export default {
   name: "ToDo",
@@ -32,7 +32,8 @@ export default {
   },
   methods: {
     async aaa() {
-      /*       console.log(getLists); */
+      console.log(process.env.VUE_DB_URL)
+      /* test1(); */
     },
   },
   data() {
@@ -64,19 +65,7 @@ export default {
   },
 
   async beforeMount() {
-    const citiesRef = await db.collection("lists");
-    const snapshot = await citiesRef
-      .where("uid", "==", this.$store.state.uid)
-      .get();
-    await snapshot.forEach((doc) => {
-      let x = doc.data();
-      console.log(x);
-      this.$store.state.lists.push(x);
-    });
-    this.$store.state.lists.sort((a, b) => a.name.localeCompare(b.name));
-    this.$store.state.visibleLists = this.$store.state.lists;
-
-    /*     //Получаем из БД данные о списках дел
+    //Получаем из БД данные о списках дел
     const resList = await fetch("http://localhost:5000/lists", {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -85,7 +74,7 @@ export default {
     this.$store.state.lists = dataList.filter(
       (list) => list.uid === this.$store.state.uid
     );
-    
+    this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
     this.$store.state.visibleLists = this.$store.state.lists;
 
     //Получаем из БД данные о задачах
@@ -118,7 +107,7 @@ export default {
       } else {
         this.$store.state.visibleLists[list].color = "green";
       }
-    } */
+    }
   },
 
   mounted() {
