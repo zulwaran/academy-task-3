@@ -7,6 +7,8 @@
 
 
 <script>
+import "firebase/firestore";
+import { db } from "../firebase";
 export default {
   name: "AddList",
   data() {
@@ -21,27 +23,28 @@ export default {
         alert("Введите название списка");
         return;
       }
-      const newList = {
-        uid: this.$store.state.uid,
-        text: text,
-        count_tasks: 0,
-        color: '',
-      };
 
-      const res = await fetch(process.env.VUE_DB_URL+"/lists", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(newList),
+      await db.collection("lists").add({
+        id: Math.floor(Math.random() * 100000),
+        uid: this.$store.state.uid,
+        name: text,
+        count_tasks: 0,
+        color: "",
       });
-      const data = await res.json();
-      this.$store.state.lists = [...this.$store.state.lists, data];
-      this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
+
+      const listsRef = await db.collection("lists");
+      let snapshot = await listsRef
+        .where("uid", "==", this.$store.state.uid)
+        .get();
+      await snapshot.forEach((doc) => {
+        let docList = doc.data();
+        this.$store.state.lists.push(docList);
+      });
+      this.$store.state.lists.sort((a, b) => a.name.localeCompare(b.name));
       this.$store.state.visibleLists = this.$store.state.lists;
 
       this.text = "";
-      
+
       //Осуществляем фильтрацию и вывод на экран нового списка дел
       if (this.$store.state.selectedOption == "all") {
         this.$store.state.visibleLists = this.$store.state.lists;
