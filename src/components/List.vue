@@ -1,5 +1,5 @@
 <template>
-  <div class="text">{{ list.text }}</div>
+  <div class="text">{{ list.name }}</div>
   <i @click="onDelete(list.id)" class="fas fa-times"></i>
 </template>
 

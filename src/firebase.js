@@ -13,10 +13,11 @@ const firebaseConfig = {
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 
-const db = firebaseApp.firestore()
+export const db = firebaseApp.firestore()
 const usersCollection = db.collection('users')
 
-export const createUser = user => {return usersCollection.add(user)}
+
+export const createUser = user => { return usersCollection.add(user) }
 
 
 

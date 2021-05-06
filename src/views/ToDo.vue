@@ -11,6 +11,7 @@
         :currentList="$store.state.currentList"
       />
     </div>
+    <button @click="aaa">ЖМИ</button>
   </section>
 </template>
 
@@ -21,6 +22,7 @@ import { onBeforeMount } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
+import { db } from "../firebase";
 
 export default {
   name: "ToDo",
@@ -28,7 +30,11 @@ export default {
     ListBlock,
     TaskBlock,
   },
-  methods: {},
+  methods: {
+    async aaa() {
+      /*       console.log(getLists); */
+    },
+  },
   data() {
     return {
       name: "",
@@ -58,17 +64,35 @@ export default {
   },
 
   async beforeMount() {
-    //Получаем из БД данные о списках дел
-    const resList = await fetch(process.env.VUE_DB_URL + "/lists");
+    const citiesRef = await db.collection("lists");
+    const snapshot = await citiesRef
+      .where("uid", "==", this.$store.state.uid)
+      .get();
+    await snapshot.forEach((doc) => {
+      let x = doc.data();
+      console.log(x);
+      this.$store.state.lists.push(x);
+    });
+    this.$store.state.lists.sort((a, b) => a.name.localeCompare(b.name));
+    this.$store.state.visibleLists = this.$store.state.lists;
+
+    /*     //Получаем из БД данные о списках дел
+    const resList = await fetch("http://localhost:5000/lists", {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    });
     const dataList = await resList.json();
     this.$store.state.lists = dataList.filter(
       (list) => list.uid === this.$store.state.uid
     );
-    this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
+    
     this.$store.state.visibleLists = this.$store.state.lists;
 
     //Получаем из БД данные о задачах
-    const resTasks = await fetch(process.env.VUE_DB_URL + "/tasks");
+    const resTasks = await fetch("http://localhost:5000/tasks", {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    });
     const dataTasks = await resTasks.json();
     this.$store.state.tasks = dataTasks;
 
@@ -94,8 +118,9 @@ export default {
       } else {
         this.$store.state.visibleLists[list].color = "green";
       }
-    }
+    } */
   },
+
   mounted() {
     if (localStorage.uid) {
       this.$store.state.uid = localStorage.uid;
