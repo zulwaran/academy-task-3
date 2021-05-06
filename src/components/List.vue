@@ -4,6 +4,8 @@
 </template>
 
 <script>
+import "firebase/firestore";
+import { db } from "../firebase";
 export default {
   name: "List",
   props: {
@@ -11,29 +13,34 @@ export default {
   },
   methods: {
     async onDelete(id) {
+      console.log(id);
+
       //Удаляем список дел
       if (confirm("Вы действительно хотите удалить список?")) {
-        const ref = await fetch(process.env.VUE_DB_URL + `/lists/${id}`, {
-          method: "DELETE",
+        const listsRef = await db.collection("lists");
+        let listSnapshot = await listsRef.where("id", "==", id).get();
+        await listSnapshot.forEach((doc) => {
+          /* const deletedList = doc.id; */
+          db.collection("lists").doc(doc.id).delete();
         });
-        if (ref.status === 200) {
-          this.$store.state.lists = this.$store.state.lists.filter(
-            (list) => list.id !== id
-          );
-          this.$store.state.tasks = this.$store.state.tasks.filter(
-            (task) => task.listId !== id
-          );
-          this.$store.state.currentTasks = [];
-          if (
-            this.$store.state.currentList &&
-            this.$store.state.currentList.id === id
-          ) {
-            this.$store.state.showAddTask = false;
-            this.$store.state.showListName = false;
-            this.$store.state.showTasks = false;
-          }
-        } else {
-          alert("Error");
+        this.$store.state.lists = this.$store.state.lists.filter(
+          (list) => list.id !== id
+        );
+        console.log(this.$store.state.lists);
+
+        const tasksRef = await db.collection("tasks");
+        let snapshotTasks = await tasksRef.where("listId", "==", id).get();
+        await snapshotTasks.forEach((doc) => {
+          db.collection("tasks").doc(doc.id).delete();
+        });
+        this.$store.state.currentTasks = [];
+        if (
+          this.$store.state.currentList &&
+          this.$store.state.currentList.id === id
+        ) {
+          this.$store.state.showAddTask = false;
+          this.$store.state.showListName = false;
+          this.$store.state.showTasks = false;
         }
 
         //Фильтруем новый список дел
