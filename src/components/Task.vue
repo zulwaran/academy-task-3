@@ -21,11 +21,14 @@ export default {
   props: {
     task: Object,
   },
+  computed: {},
   methods: {
+    
+    //Удаляем задачу у выбранного списка дел
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить задачу?")) {
         const tasksRef = await db.collection("tasks");
-        let snapshot = await tasksRef.where("id", "==", id).get();
+        const snapshot = await tasksRef.where("id", "==", id).get();
         await snapshot.forEach((doc) => {
           const deletedTask = doc.id;
           db.collection("tasks").doc(deletedTask).delete();
@@ -36,10 +39,57 @@ export default {
         this.$store.state.currentTasks = this.$store.state.currentTasks.filter(
           (task) => task.id !== id
         );
-      }
 
+        await this.listDecrement();
+        this.listStatus();
+      }
+    },
+
+    //Меняем статус завершенности у задачи
+    async taskCompleted(id) {
+      const taskRef = await db.collection("tasks");
+      const snapshot = await taskRef.where("id", "==", id).get();
+      snapshot.forEach((doc) => {
+        const taskCheck = db.collection("tasks").doc(doc.id);
+        if (doc.data().completed === true) {
+          taskCheck.update({
+            completed: false,
+          });
+          for (let task in this.$store.state.currentTasks) {
+            if (this.$store.state.currentTasks[task].id === id) {
+              this.$store.state.currentTasks[task].completed = false;
+            }
+          }
+        } else {
+          taskCheck.update({
+            completed: true,
+          });
+          for (let task in this.$store.state.currentTasks) {
+            if (this.$store.state.currentTasks[task].id === id) {
+              this.$store.state.currentTasks[task].completed = true;
+            }
+          }
+        }
+      });
+      this.listStatus();
+    },
+
+    //Получаем задачи из БД
+    async getTasks() {
+      this.$store.state.tasks = [];
+      const tasksRef = await db.collection("tasks");
+      const snapshot = await tasksRef.get();
+      await snapshot.forEach((doc) => {
+        let docTask = doc.data();
+        this.$store.state.tasks.push(docTask);
+      });
+      return this.$store.state.tasks;
+    },
+
+    //Уменьшаем счетчик количества задач у выбранного списка дел
+    async listDecrement() {
       const listsRef = await db.collection("lists");
-      let snapshot = await listsRef
+      const snapshot = await listsRef
         .where("id", "==", this.$store.state.currentList.id)
         .get();
       await snapshot.forEach((doc) => {
@@ -48,10 +98,19 @@ export default {
         decrementList.update({
           count_tasks: firebase.firestore.FieldValue.increment(-1),
         });
+        for (let list in this.$store.state.lists) {
+          if (
+            this.$store.state.lists[list].id ===
+            this.$store.state.currentList.id
+          ) {
+            this.$store.state.lists[list].count_tasks -= 1;
+          }
+        }
       });
+    },
 
-      /*  
-      //Отображаем статус списков дел
+    //Статус завершенности списков дел
+    async listStatus() {
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -71,45 +130,6 @@ export default {
           this.$store.state.visibleLists[list].color = "green";
         }
       }
-      return data; */
-    },
-
-    async taskCompleted(id) {
-      const taskRef = await db.collection("tasks");
-      let taskSnapshot = await taskRef.where("id", "==", id).get();
-      await taskSnapshot.forEach((doc) => {
-        var taskCheck = db.collection("tasks").doc(doc.id);
-        if (doc.data().completed === true) {
-          return taskCheck.update({
-            completed: false,
-          });
-        } else {
-          return taskCheck.update({
-            completed: true,
-          });
-        }
-      });
-
-      /*    //Обновляем статусы задач
-      for (let list in this.$store.state.visibleLists) {
-        let count = 0;
-        for (let task in this.$store.state.tasks) {
-          if (
-            this.$store.state.visibleLists[list].id ===
-              this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
-          ) {
-            count++;
-          }
-        }
-        if (this.$store.state.visibleLists[list].count_tasks === 0) {
-          this.$store.state.visibleLists[list].color = "white";
-        } else if (this.$store.state.visibleLists[list].count_tasks === count) {
-          this.$store.state.visibleLists[list].color = "gray";
-        } else {
-          this.$store.state.visibleLists[list].color = "green";
-        }
-      }*/
     },
   },
 };
