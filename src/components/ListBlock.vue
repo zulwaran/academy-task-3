@@ -34,13 +34,15 @@ export default {
   },
   methods: {
     getList(list) {
+      
       //Получаем текущий список дел
       this.$store.state.currentList = list;
-
+      
       //Отображаем задачи текущего списка дел
       this.$store.state.showAddTask = true;
       this.$store.state.showListName = true;
       this.$store.state.showTasks = true;
+
       this.$store.state.currentTasks = this.$store.state.tasks.filter(
         (task) => task.listId === list.id
       );
