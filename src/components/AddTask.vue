@@ -23,6 +23,52 @@ export default {
     };
   },
   methods: {
+    //Увеличиваем счетчик задач у выбранного списка дел
+    async listIncrement() {
+      const listsRef = await db.collection("lists");
+      const snapshot = await listsRef
+        .where("id", "==", this.$store.state.currentList.id)
+        .get();
+      await snapshot.forEach((doc) => {
+        const incListId = doc.id;
+        var icrementList = db.collection("lists").doc(incListId);
+        icrementList.update({
+          count_tasks: firebase.firestore.FieldValue.increment(1),
+        });
+        for (let list in this.$store.state.lists) {
+          if (
+            this.$store.state.lists[list].id ===
+            this.$store.state.currentList.id
+          ) {
+            this.$store.state.lists[list].count_tasks += 1;
+          }
+        }
+      });
+    },
+
+    //Статус завершенности списков дел
+    async listStatus() {
+      for (let list in this.$store.state.visibleLists) {
+        let count = 0;
+        for (let task in this.$store.state.tasks) {
+          if (
+            this.$store.state.visibleLists[list].id ===
+              this.$store.state.tasks[task].listId &&
+            this.$store.state.tasks[task].completed === true
+          ) {
+            count++;
+          }
+        }
+        if (this.$store.state.visibleLists[list].count_tasks === 0) {
+          this.$store.state.visibleLists[list].color = "white";
+        } else if (this.$store.state.visibleLists[list].count_tasks === count) {
+          this.$store.state.visibleLists[list].color = "gray";
+        } else {
+          this.$store.state.visibleLists[list].color = "green";
+        }
+      }
+    },
+
     //Добавляем новую задачу в список дел
     async addTask(text, check) {
       if (!this.text) {
@@ -48,7 +94,9 @@ export default {
         minut = "0" + date.getMinutes();
       }
       day = day + "." + month + "." + year + " " + hour + ":" + minut;
+
       const newTask = {
+        id: Math.floor(Math.random() * 100000),
         listId: this.$store.state.currentList.id,
         title: text,
         day: day,
@@ -60,6 +108,7 @@ export default {
         .collection("tasks")
         .doc()
         .set({
+          id: newTask.id,
           listId: newTask.listId,
           title: newTask.title,
           day: newTask.day,
@@ -67,7 +116,7 @@ export default {
           completed: newTask.completed,
         })
         .then(() => {
-          this.$store.state.tasks = [...this.$store.state.lists, newTask];
+          this.$store.state.tasks = [...this.$store.state.tasks, newTask];
           this.$store.state.currentTasks = [
             ...this.$store.state.currentTasks,
             newTask,
@@ -76,38 +125,8 @@ export default {
       this.text = "";
       this.check = false;
 
-      const listsRef = await db.collection("lists");
-      let snapshot = await listsRef
-        .where("id", "==", this.$store.state.currentList.id)
-        .get();
-      await snapshot.forEach((doc) => {
-        const incListId = doc.id;
-        var icrementList = db.collection("lists").doc(incListId);
-        icrementList.update({
-          count_tasks: firebase.firestore.FieldValue.increment(1),
-        });
-      });
-
-      /*       //Обновляем статус списков дел
-      for (let list in this.$store.state.visibleLists) {
-        let count = 0;
-        for (let task in this.$store.state.tasks) {
-          if (
-            this.$store.state.visibleLists[list].id ===
-              this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
-          ) {
-            count++;
-          }
-        }
-        if (this.$store.state.visibleLists[list].count_tasks === 0) {
-          this.$store.state.visibleLists[list].color = "white";
-        } else if (this.$store.state.visibleLists[list].count_tasks === count) {
-          this.$store.state.visibleLists[list].color = "gray";
-        } else {
-          this.$store.state.visibleLists[list].color = "green";
-        }
-      } */
+      await this.listIncrement();
+      this.listStatus();
     },
   },
 };

@@ -25,18 +25,12 @@ export default {
       this.$store.state.showAddTask = false;
       this.$store.state.showTasks = false;
 
-      //Фильтруем списки дел
-      if (selectedOption == "all") {
-        this.$store.state.visibleLists = this.$store.state.lists;
-      }
-      if (selectedOption == "done") {
-        this.$store.state.visibleLists = this.$store.getters.doneLists;
-      }
-      if (selectedOption == "works") {
-        this.$store.state.visibleLists = this.$store.getters.workLists;
-      }
+      this.filter();
+      this.listStatus();
+    },
 
-      //Отображаем статус списков дел
+    //Статус завершенности списков дел
+    async listStatus() {
       for (let list in this.$store.state.visibleLists) {
         let count = 0;
         for (let task in this.$store.state.tasks) {
@@ -55,6 +49,19 @@ export default {
         } else {
           this.$store.state.visibleLists[list].color = "green";
         }
+      }
+    },
+
+    //Фильтруем списки дел
+    async filter() {
+      if (this.$store.state.selectedOption == "all") {
+        this.$store.state.visibleLists = this.$store.state.lists;
+      }
+      if (this.$store.state.selectedOption == "done") {
+        this.$store.state.visibleLists = this.$store.getters.doneLists;
+      }
+      if (this.$store.state.selectedOption == "works") {
+        this.$store.state.visibleLists = this.$store.getters.workLists;
       }
     },
   },
