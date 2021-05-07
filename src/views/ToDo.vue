@@ -11,7 +11,6 @@
         :currentList="$store.state.currentList"
       />
     </div>
-    <button @click="aaa">ЖМИ</button>
   </section>
 </template>
 
@@ -22,7 +21,7 @@ import { onBeforeMount } from "vue";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-/* import {test1} from "../firebase"; */
+import { db } from "../firebase";
 
 export default {
   name: "ToDo",
@@ -31,11 +30,70 @@ export default {
     TaskBlock,
   },
   methods: {
-    async aaa() {
-      console.log(process.env.VUE_DB_URL)
-      /* test1(); */
+    //Получаем из БД списки дел
+    async getLists() {
+      this.$store.state.lists = [];
+      let listsRef = await db.collection("lists");
+      let snapshot = await listsRef
+        .where("uid", "==", this.$store.state.uid)
+        .get();
+      await snapshot.forEach((doc) => {
+        let docList = doc.data();
+        this.$store.state.lists.push(docList);
+      });
+      this.$store.state.lists.sort((a, b) => a.name.localeCompare(b.name));
+      this.$store.state.visibleLists = await this.$store.state.lists;
+    },
+
+    //Получаем из БД задачи для списков дел
+    async getTasks() {
+      this.$store.state.tasks = [];
+      let tasksRef = await db.collection("tasks");
+      let snapshot = await tasksRef.get();
+      await snapshot.forEach((doc) => {
+        let docTask = doc.data();
+        this.$store.state.tasks.push(docTask);
+      });
+      this.$store.state.visibleTasks = await this.$store.state.tasks;
+    },
+
+    //Фильтрация списков дел
+    async filter() {
+      if (this.$store.state.selectedOption == "all") {
+        this.$store.state.visibleLists = this.$store.state.lists;
+      }
+      if (this.$store.state.selectedOption == "done") {
+        this.$store.state.visibleLists = this.$store.getters.doneLists;
+      }
+      if (this.$store.state.selectedOption == "works") {
+        this.$store.state.visibleLists = this.$store.getters.workLists;
+      }
+    },
+
+    //Статус завершенности списков дел
+    async listStatus() {
+      for (let list in this.$store.state.visibleLists) {
+        let count = 0;
+        for (let task in this.$store.state.tasks) {
+          if (
+            this.$store.state.visibleLists[list].id ===
+              this.$store.state.tasks[task].listId &&
+            this.$store.state.tasks[task].completed === true
+          ) {
+            count++;
+          }
+        }
+        if (this.$store.state.visibleLists[list].count_tasks === 0) {
+          this.$store.state.visibleLists[list].color = "white";
+        } else if (this.$store.state.visibleLists[list].count_tasks === count) {
+          this.$store.state.visibleLists[list].color = "gray";
+        } else {
+          this.$store.state.visibleLists[list].color = "green";
+        }
+      }
     },
   },
+
   data() {
     return {
       name: "",
@@ -63,54 +121,15 @@ export default {
       Logout,
     };
   },
-
   async beforeMount() {
-    //Получаем из БД данные о списках дел
-    const resList = await fetch("http://localhost:5000/lists", {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    });
-    const dataList = await resList.json();
-    this.$store.state.lists = dataList.filter(
-      (list) => list.uid === this.$store.state.uid
-    );
-    this.$store.state.lists.sort((a, b) => a.text.localeCompare(b.text));
-    this.$store.state.visibleLists = this.$store.state.lists;
-
-    //Получаем из БД данные о задачах
-    const resTasks = await fetch("http://localhost:5000/tasks", {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    });
-    const dataTasks = await resTasks.json();
-    this.$store.state.tasks = dataTasks;
-
-    //Фильтруем списки дел
-    this.$store.state.visibleLists = this.$store.getters.doneLists;
-
-    //Задаем статус отфильтрованных списков дел
-    for (let list in this.$store.state.visibleLists) {
-      let count = 0;
-      for (let task in this.$store.state.tasks) {
-        if (
-          this.$store.state.visibleLists[list].id ===
-            this.$store.state.tasks[task].listId &&
-          this.$store.state.tasks[task].completed === true
-        ) {
-          count++;
-        }
-      }
-      if (this.$store.state.visibleLists[list].count_tasks === 0) {
-        this.$store.state.visibleLists[list].color = "white";
-      } else if (this.$store.state.visibleLists[list].count_tasks === count) {
-        this.$store.state.visibleLists[list].color = "gray";
-      } else {
-        this.$store.state.visibleLists[list].color = "green";
-      }
-    }
+    await this.getLists();
+    await this.getTasks();
+    await this.filter();
+    await this.listStatus();
   },
 
-  mounted() {
+  async mounted() {
+    this.listStatus();
     if (localStorage.uid) {
       this.$store.state.uid = localStorage.uid;
       this.name = localStorage.name;
