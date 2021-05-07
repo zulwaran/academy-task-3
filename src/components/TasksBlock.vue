@@ -1,6 +1,6 @@
 <template>
   <div class="tasks">
-    <div class="tasks__title" v-show="$store.state.showListName">{{ currentList.text }}</div>
+    <div class="tasks__title" v-show="$store.state.showListName">{{ currentList.name }}</div>
     <div class="tasks__items">
       <div class="tasks__item" v-show="$store.state.showTasks" :key="task.id" v-for="task in currentTasks">
         <Task :task="task" />
