@@ -11,6 +11,7 @@
         :currentList="$store.state.currentList"
       />
     </div>
+    <button @click="aaa">sadasdsadas</button>
   </section>
 </template>
 
@@ -30,6 +31,8 @@ export default {
     TaskBlock,
   },
   methods: {
+    aaa() {},
+
     //Получаем из БД списки дел
     async getLists() {
       this.$store.state.lists = [];
@@ -48,7 +51,7 @@ export default {
     //Получаем из БД задачи для списков дел
     async getTasks() {
       this.$store.state.tasks = [];
-      let tasksRef = await db.collection("tasks");
+      let tasksRef = await db.collection("tasks").orderBy("day");
       let snapshot = await tasksRef.get();
       await snapshot.forEach((doc) => {
         let docTask = doc.data();
@@ -107,6 +110,7 @@ export default {
         localStorage.name = user.email.split("@")[0];
         localStorage.uid = user.uid;
       }
+      console.log(user);
     });
 
     //Выход с аккаунта

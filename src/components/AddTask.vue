@@ -93,7 +93,12 @@ export default {
       if (date.getMinutes() < 10) {
         minut = "0" + date.getMinutes();
       }
-      day = day + "." + month + "." + year + " " + hour + ":" + minut;
+      let sec = date.getSeconds();
+      if (date.getSeconds() < 10) {
+        sec = "0" + date.getDate();
+      }
+      day =
+        day + "." + month + "." + year + " " + hour + ":" + minut + ":" + sec;
 
       const newTask = {
         id: Math.floor(Math.random() * 100000),
