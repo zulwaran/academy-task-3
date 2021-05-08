@@ -30,7 +30,6 @@ export default {
     TaskBlock,
   },
   methods: {
-
     //Получаем из БД списки дел
     async getLists() {
       this.$store.state.lists = [];
@@ -108,7 +107,6 @@ export default {
         localStorage.name = user.email.split("@")[0];
         localStorage.uid = user.uid;
       }
-      console.log(user);
     });
 
     //Выход с аккаунта
@@ -136,6 +134,13 @@ export default {
       this.$store.state.uid = localStorage.uid;
       this.name = localStorage.name;
     }
+  },
+  async beforeUnmount() {
+    this.$store.state.visibleLists = [];
+    this.$store.state.currentTasks = [];
+    this.$store.state.showAddTask = false;
+    this.$store.state.showListName = false;
+    this.$store.state.showTasks = false;
   },
 };
 </script>
