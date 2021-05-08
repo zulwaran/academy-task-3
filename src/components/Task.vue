@@ -53,6 +53,7 @@ export default {
         if (doc.data().is_completed === true) {
           taskCheck.update({
             is_completed: false,
+            updated_at: this.data(),
           });
           for (let task in this.$store.state.currentTasks) {
             if (this.$store.state.currentTasks[task].id === id) {
@@ -62,6 +63,7 @@ export default {
         } else {
           taskCheck.update({
             is_completed: true,
+            updated_at: this.data(),
           });
           for (let task in this.$store.state.currentTasks) {
             if (this.$store.state.currentTasks[task].id === id) {
@@ -106,6 +108,35 @@ export default {
           }
         }
       });
+    },
+
+    //Определяем текущий момент времени
+    data() {
+      let date = new Date();
+      let day = date.getDate();
+      if (date.getDate() < 10) {
+        day = "0" + date.getDate();
+      }
+      let month = date.getMonth();
+      if (date.getMonth() < 10) {
+        month = "0" + (date.getMonth() + 1);
+      }
+      let year = String(date.getFullYear()).substr(2);
+      let hour = date.getHours();
+      if (date.getHours() < 10) {
+        hour = "0" + date.getHours();
+      }
+      let minut = date.getMinutes();
+      if (date.getMinutes() < 10) {
+        minut = "0" + date.getMinutes();
+      }
+      let sec = date.getSeconds();
+      if (date.getSeconds() < 10) {
+        sec = "0" + date.getDate();
+      }
+      day =
+        day + "." + month + "." + year + " " + hour + ":" + minut + ":" + sec;
+      return day;
     },
 
     //Статус завершенности списков дел
