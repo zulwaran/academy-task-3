@@ -2,12 +2,12 @@
   <input
     type="checkbox"
     @click="taskCompleted(task.id, task.listId)"
-    :checked="task.completed"
+    :checked="task.is_completed"
   />
   <div class="task">
-    <i :class="[task.urgently ? 'fas fa-circle' : '']"></i>
-    <div class="text">{{ task.title }}</div>
-    <div class="data">{{ task.day }}</div>
+    <i :class="[task.urgency ? 'fas fa-circle' : '']"></i>
+    <div class="text">{{ task.name }}</div>
+    <div class="data">{{ task.created_at }}</div>
     <i @click="onDelete(task.id)" class="fas fa-times"></i>
   </div>
 </template>
@@ -23,7 +23,6 @@ export default {
   },
   computed: {},
   methods: {
-    
     //Удаляем задачу у выбранного списка дел
     async onDelete(id) {
       if (confirm("Вы действительно хотите удалить задачу?")) {
@@ -51,22 +50,22 @@ export default {
       const snapshot = await taskRef.where("id", "==", id).get();
       snapshot.forEach((doc) => {
         const taskCheck = db.collection("tasks").doc(doc.id);
-        if (doc.data().completed === true) {
+        if (doc.data().is_completed === true) {
           taskCheck.update({
-            completed: false,
+            is_completed: false,
           });
           for (let task in this.$store.state.currentTasks) {
             if (this.$store.state.currentTasks[task].id === id) {
-              this.$store.state.currentTasks[task].completed = false;
+              this.$store.state.currentTasks[task].is_completed = false;
             }
           }
         } else {
           taskCheck.update({
-            completed: true,
+            is_completed: true,
           });
           for (let task in this.$store.state.currentTasks) {
             if (this.$store.state.currentTasks[task].id === id) {
-              this.$store.state.currentTasks[task].completed = true;
+              this.$store.state.currentTasks[task].is_completed = true;
             }
           }
         }
@@ -117,7 +116,7 @@ export default {
           if (
             this.$store.state.visibleLists[list].id ===
               this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
+            this.$store.state.tasks[task].is_completed === true
           ) {
             count++;
           }

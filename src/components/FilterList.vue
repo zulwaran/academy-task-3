@@ -37,7 +37,7 @@ export default {
           if (
             this.$store.state.visibleLists[list].id ===
               this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
+            this.$store.state.tasks[task].is_completed === true
           ) {
             count++;
           }

@@ -48,7 +48,7 @@ export default {
     //Получаем из БД задачи для списков дел
     async getTasks() {
       this.$store.state.tasks = [];
-      let tasksRef = await db.collection("tasks").orderBy("day");
+      let tasksRef = await db.collection("tasks").orderBy("created_at");
       let snapshot = await tasksRef.get();
       await snapshot.forEach((doc) => {
         let docTask = doc.data();
@@ -78,7 +78,7 @@ export default {
           if (
             this.$store.state.visibleLists[list].id ===
               this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
+            this.$store.state.tasks[task].is_completed === true
           ) {
             count++;
           }

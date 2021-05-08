@@ -54,7 +54,7 @@ export default {
           if (
             this.$store.state.visibleLists[list].id ===
               this.$store.state.tasks[task].listId &&
-            this.$store.state.tasks[task].completed === true
+            this.$store.state.tasks[task].is_completed === true
           ) {
             count++;
           }
@@ -78,11 +78,13 @@ export default {
 
       const newTask = {
         id: Math.floor(Math.random() * 100000),
+        name: text,
         listId: this.$store.state.currentList.id,
-        title: text,
-        day: this.data(),
-        urgently: check,
-        completed: false,
+        executor_user_id: this.$store.state.uid,
+        is_completed: false,
+        description: null,
+        urgency: check,
+        created_at: this.data(),
       };
 
       await db
@@ -90,11 +92,13 @@ export default {
         .doc()
         .set({
           id: newTask.id,
+          name: newTask.name,
           listId: newTask.listId,
-          title: newTask.title,
-          day: newTask.day,
-          urgently: newTask.urgently,
-          completed: newTask.completed,
+          executor_user_id: newTask.executor_user_id,
+          is_completed: newTask.is_completed,
+          description: newTask.description,
+          urgency: newTask.urgency,
+          created_at: newTask.created_at,
         })
         .then(() => {
           this.$store.state.tasks = [...this.$store.state.tasks, newTask];
@@ -109,7 +113,7 @@ export default {
       await this.listIncrement();
       this.listStatus();
     },
-    
+
     data() {
       let date = new Date();
       let day = date.getDate();

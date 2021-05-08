@@ -32,7 +32,7 @@ const store = createStore({
                 for (let task in state.tasks) {
                     if (
                         state.tasks[task].listId === list.id &&
-                        state.tasks[task].completed === false
+                        state.tasks[task].is_completed === false
                     ) {
                         count += 1;
                     }
@@ -50,7 +50,7 @@ const store = createStore({
                 for (let task in state.tasks) {
                     if (
                         state.tasks[task].listId === list.id &&
-                        state.tasks[task].completed === false
+                        state.tasks[task].is_completed === false
                     ) {
                         count += 1;
                     }
