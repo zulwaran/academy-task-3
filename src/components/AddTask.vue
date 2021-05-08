@@ -75,36 +75,12 @@ export default {
         alert("Введите название задачи");
         return;
       }
-      let date = new Date();
-      let day = date.getDate();
-      if (date.getDate() < 10) {
-        day = "0" + date.getDate();
-      }
-      let month = date.getMonth();
-      if (date.getMonth() < 10) {
-        month = "0" + (date.getMonth() + 1);
-      }
-      let year = String(date.getFullYear()).substr(2);
-      let hour = date.getHours();
-      if (date.getHours() < 10) {
-        hour = "0" + date.getHours();
-      }
-      let minut = date.getMinutes();
-      if (date.getMinutes() < 10) {
-        minut = "0" + date.getMinutes();
-      }
-      let sec = date.getSeconds();
-      if (date.getSeconds() < 10) {
-        sec = "0" + date.getDate();
-      }
-      day =
-        day + "." + month + "." + year + " " + hour + ":" + minut + ":" + sec;
 
       const newTask = {
         id: Math.floor(Math.random() * 100000),
         listId: this.$store.state.currentList.id,
         title: text,
-        day: day,
+        day: this.data(),
         urgently: check,
         completed: false,
       };
@@ -132,6 +108,34 @@ export default {
 
       await this.listIncrement();
       this.listStatus();
+    },
+    
+    data() {
+      let date = new Date();
+      let day = date.getDate();
+      if (date.getDate() < 10) {
+        day = "0" + date.getDate();
+      }
+      let month = date.getMonth();
+      if (date.getMonth() < 10) {
+        month = "0" + (date.getMonth() + 1);
+      }
+      let year = String(date.getFullYear()).substr(2);
+      let hour = date.getHours();
+      if (date.getHours() < 10) {
+        hour = "0" + date.getHours();
+      }
+      let minut = date.getMinutes();
+      if (date.getMinutes() < 10) {
+        minut = "0" + date.getMinutes();
+      }
+      let sec = date.getSeconds();
+      if (date.getSeconds() < 10) {
+        sec = "0" + date.getDate();
+      }
+      day =
+        day + "." + month + "." + year + " " + hour + ":" + minut + ":" + sec;
+      return day;
     },
   },
 };
