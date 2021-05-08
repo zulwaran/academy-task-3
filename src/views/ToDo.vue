@@ -11,7 +11,6 @@
         :currentList="$store.state.currentList"
       />
     </div>
-    <button @click="aaa">sadasdsadas</button>
   </section>
 </template>
 
@@ -31,7 +30,6 @@ export default {
     TaskBlock,
   },
   methods: {
-    aaa() {},
 
     //Получаем из БД списки дел
     async getLists() {
