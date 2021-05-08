@@ -85,6 +85,7 @@ export default {
         description: null,
         urgency: check,
         created_at: this.data(),
+        updated_at: this.data(),
       };
 
       await db
@@ -99,6 +100,7 @@ export default {
           description: newTask.description,
           urgency: newTask.urgency,
           created_at: newTask.created_at,
+          updated_at: newTask.updated_at,
         })
         .then(() => {
           this.$store.state.tasks = [...this.$store.state.tasks, newTask];
@@ -112,8 +114,10 @@ export default {
 
       await this.listIncrement();
       this.listStatus();
+      this.updateList();
     },
 
+    //Определяем текущий момент времени
     data() {
       let date = new Date();
       let day = date.getDate();
@@ -140,6 +144,20 @@ export default {
       day =
         day + "." + month + "." + year + " " + hour + ":" + minut + ":" + sec;
       return day;
+    },
+
+    //Задаем время последнего обновления информации содержащейся в списке
+    async updateList() {
+      const taskRef = await db.collection("lists");
+      const snapshot = await taskRef
+        .where("id", "==", this.$store.state.currentList.id)
+        .get();
+      snapshot.forEach((doc) => {
+        const listUpdate = db.collection("lists").doc(doc.id);
+        listUpdate.update({
+          updated_at: this.data(),
+        });
+      });
     },
   },
 };
