@@ -136,6 +136,7 @@ export default {
     }
   },
   async beforeUnmount() {
+    this.$store.state.lists = [];
     this.$store.state.visibleLists = [];
     this.$store.state.currentTasks = [];
     this.$store.state.showAddTask = false;
