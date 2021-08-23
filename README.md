@@ -1,4 +1,4 @@
-# academy-vue
+# ToDo-list with Firebase
 
 При работе над проектом исрользовались:
 - VueX;
